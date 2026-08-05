@@ -1,43 +1,163 @@
-# Roadmap
-
-This document outlines the planned milestones and priorities for Human Made Money. It is a living roadmap — items may be re-ordered as priorities change.
+# Human Made Money Roadmap
 
 ## Vision
-Build a trusted, subscription-based escrow platform that reliably holds funds for private agreements and resolves outcomes objectively using trusted public data and AI-assisted verification.
 
-## Short term (MVP — next 0–3 months)
-- Core escrow flow: create agreement, fund escrow, release/return funds
-- Subscription and billing basics (Stripe or equivalent)
-- User accounts, authentication, and basic dashboard
-- Manual dispute workflow with structured evidence collection
-- Integrate a few trusted public data sources (APIs) for automated checks
-- Basic UI and CLI for creating and managing agreements
-- Tests and CI for core flows
+Human Made Money is building a programmable trust layer that allows humans and AI agents to create, verify, and execute financial agreements.
 
-## Mid term (3–9 months)
-- AI-assisted verification tools to summarize evidence and suggest outcomes
-- Automated resolution rules using verifiable public data sources
-- Audit logs, reporting, and notifications
-- Multi-currency support and fiat on/off ramps
-- Developer API and webhooks for integrations
-- Improved UX and mobile responsiveness
+The platform combines:
 
-## Long term (9+ months)
-- Highly-available, scalable infrastructure
-- Verifiable oracles / decentralized data integrations where applicable
-- Advanced safety, anti-fraud, and compliance features (KYC/KYB support)
-- Marketplace and partner integrations
-- Enterprise features: SLA, advanced access controls, analytics
+* Secure escrow
+* AI-powered verification
+* Dynamic intent funding
+* Automated settlement
 
-## Milestones & acceptance criteria
-- Alpha: end-to-end escrow flow working in a sandbox with manual dispute handling
-- Beta: automated data checks enabled, subscription billing live, public API
-- v1.0: stable production release with SLA, monitoring, and core automation features
+The goal is to remove the need for blind trust between parties.
 
-## How to contribute
-- File issues for bugs and feature requests
-- Open pull requests with clear descriptions and tests
-- Join roadmap discussions in issues or project boards to help prioritize
+---
 
-## Notes
-- This roadmap is intentionally high-level. For sprint-level tasks and timelines, see the project's issue tracker and project board.
+# Phase 1 — Foundation (MVP)
+
+## Goal
+
+Create a secure platform for objective agreements between users.
+
+### Features
+
+* User accounts
+* Profiles
+* Agreement creation
+* Participant invitations
+* Escrow deposits
+* Locked funds
+* AI-assisted verification
+* Automated settlement
+* Transaction history
+* Subscription system
+
+### Escrow Model
+
+Traditional escrow:
+
+Agreement created → Funds deposited → Outcome verified → Funds released
+
+---
+
+# Phase 2 — Dynamic Intent Funding
+
+## Goal
+
+Allow users to create agreements without immediately locking funds.
+
+Dynamic Intent Funding introduces conditional financial commitments.
+
+Instead of:
+
+"Lock money now"
+
+The system creates:
+
+"I intend to fund this agreement if this condition occurs."
+
+---
+
+## Workflow
+
+Agreement created
+
+↓
+
+AI analyzes terms
+
+↓
+
+Trusted sources are monitored
+
+↓
+
+Trigger condition occurs
+
+↓
+
+Funding request activated
+
+↓
+
+Escrow begins
+
+↓
+
+Settlement occurs
+
+---
+
+## Example
+
+Agreement:
+
+"I will pay $500 if Bitcoin reaches $200,000 before December 31."
+
+System:
+
+* Creates intent agreement
+* Monitors Bitcoin price
+* Detects trigger
+* Requests funding
+* Executes settlement
+
+---
+
+# Phase 3 — Human Agreement Network
+
+Expand beyond personal agreements.
+
+Potential applications:
+
+## Business
+
+* Performance bonuses
+* Milestone payments
+* Revenue incentives
+
+## Freelancing
+
+* Project completion payments
+* Quality guarantees
+
+## Creator Economy
+
+* Subscriber milestones
+* Campaign outcomes
+
+## AI Agents
+
+* Machine-to-machine agreements
+* Autonomous transactions
+
+---
+
+# Phase 4 — Global Trust Infrastructure
+
+Long-term vision:
+
+Human Made Money becomes infrastructure for programmable agreements.
+
+Capabilities:
+
+* Global payment support
+* Enterprise accounts
+* Developer APIs
+* AI agent integrations
+* White-label escrow
+* Automated contract execution
+
+---
+
+# Core Product Principles
+
+1. Neutral platform
+2. No house advantage
+3. Transparent verification
+4. Explainable AI decisions
+5. User-controlled agreements
+6. Secure financial execution
+7. Human review for uncertain outcomes

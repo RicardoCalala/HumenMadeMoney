@@ -1,0 +1,1 @@
+export default function AccountUnavailablePage() { return <main className="mx-auto grid min-h-screen max-w-lg place-content-center px-4"><h1 className="text-3xl font-semibold">Account unavailable</h1><p className="mt-3 text-slate-600">This account cannot access agreement information. Contact the development workspace administrator.</p></main>; }

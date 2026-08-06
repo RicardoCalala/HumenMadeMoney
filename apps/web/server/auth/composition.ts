@@ -1,0 +1,15 @@
+import { InMemoryAccountRepository, InMemorySessionRepository } from "./in-memory.ts";
+import { AuthenticationService } from "./service.ts";
+const mode = process.env.HMM_AUTH_MODE ?? (process.env.NODE_ENV === "production" ? "disabled" : "local_development");
+export function assertAuthModeAllowed(environment: string | undefined, selectedMode: string) { if (selectedMode === "local_development" && environment === "production") throw new Error("Local development authentication cannot run in production."); }
+assertAuthModeAllowed(process.env.NODE_ENV, mode);
+const stamp = "2026-08-06T00:00:00.000Z";
+export const developmentProfiles = mode === "local_development" ? [{ profileId: "alex", displayName: "Alex (local profile)" }, { profileId: "jordan", displayName: "Jordan (local profile)" }] : [];
+export const accountRepository = new InMemoryAccountRepository([
+  { accountId: "account-alex", state: "active", displayName: "Alex", primaryEmail: "alex@local.invalid", createdAt: stamp, updatedAt: stamp },
+  { accountId: "account-jordan", state: "active", displayName: "Jordan", primaryEmail: "jordan@local.invalid", createdAt: stamp, updatedAt: stamp },
+], new Map([["alex", "account-alex"], ["jordan", "account-jordan"]]));
+export const sessionRepository = new InMemorySessionRepository();
+export const authenticationService = new AuthenticationService(accountRepository, sessionRepository);
+export const creatorPartyByAccount = new Map([["account-alex", "party-demo"], ["account-jordan", "party-jordan"]]);
+export const localAuthenticationEnabled = mode === "local_development";

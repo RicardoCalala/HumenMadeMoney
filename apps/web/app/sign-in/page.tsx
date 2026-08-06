@@ -1,0 +1,6 @@
+import { redirect } from "next/navigation";
+import { SignInForm } from "@/components/auth/SignInForm";
+import { developmentProfiles, localAuthenticationEnabled } from "@/server/auth/composition";
+import { getCurrentUser } from "@/server/auth/current-user";
+function safeReturn(value: string | undefined) { if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\") || value.includes(":")) return "/dashboard"; return value; }
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ returnTo?: string }> }) { const current = await getCurrentUser(); const returnTo = safeReturn((await searchParams).returnTo); if (current.user) redirect(returnTo); return <main className="mx-auto grid min-h-screen max-w-lg place-content-center gap-6 px-4"><div><p className="text-sm font-semibold text-teal-800">Local development access</p><h1 className="mt-2 text-3xl font-semibold">Choose a development profile</h1><p className="mt-3 text-slate-600">These disposable local profiles are for development only. They do not verify identity and are unavailable in production.</p></div>{localAuthenticationEnabled ? <SignInForm profiles={developmentProfiles} returnTo={returnTo}/> : <p role="alert">Local authentication is unavailable in this environment.</p>}</main>; }

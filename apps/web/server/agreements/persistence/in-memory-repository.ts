@@ -1,5 +1,5 @@
 import type { AuditRecord, AgreementLanguageDocument } from "../../../lib/agreement-language/types.ts";
-import type { AgreementAggregate } from "../application/contracts.ts";
+import type { AgreementAggregate, AgreementMembership } from "../application/contracts.ts";
 import { assertAggregateConsistency } from "../domain/versioning.ts";
 import type { AgreementListQuery, AgreementMutationMetadata, AgreementPage, AgreementRepository, CreateRepositoryResult, SaveRepositoryResult } from "./repository.ts";
 
@@ -18,7 +18,7 @@ const decode = (cursor: string): CursorPayload => {
   return value;
 };
 const queryBinding = (query: AgreementListQuery) => JSON.stringify({ lifecycleState: query.lifecycleState ?? null, versionState: query.versionState ?? null, protectionMode: query.protectionMode ?? null, updatedAfter: query.updatedAfter ?? null });
-const scopeKey = (scope: { actorId: string; scopeId: string }) => `${scope.actorId}:${scope.scopeId}`;
+const scopeKey = (scope: { accountId: string; scopeId: string; agreementIds: string[] }) => `${scope.accountId}:${scope.scopeId}:${[...scope.agreementIds].sort().join(",")}`;
 const idemKey = (metadata: AgreementMutationMetadata) => metadata.idempotency ? JSON.stringify(metadata.idempotency.scope) + ":" + metadata.idempotency.key : null;
 
 /** Development-only process-local repository. It is disposable and is not production persistence. */
@@ -27,6 +27,7 @@ export class InMemoryAgreementRepository implements AgreementRepository {
   private readonly versions = new Map<string, AgreementLanguageDocument[]>();
   private readonly idempotency = new Map<string, IdempotencyRecord>();
   private readonly auditRecords: AuditRecord[] = [];
+  private readonly memberships: AgreementMembership[] = [];
   constructor(seed: AgreementAggregate[] = []) { for (const aggregate of seed) this.insertSeed(aggregate); }
 
   private insertSeed(aggregate: AgreementAggregate) { assertAggregateConsistency(aggregate.lifecycleState, aggregate.currentDocument, aggregate.currentVersionId); this.aggregates.set(aggregate.agreementId, clone(aggregate)); this.versions.set(aggregate.agreementId, [clone(aggregate.currentDocument)]); }
@@ -36,7 +37,11 @@ export class InMemoryAgreementRepository implements AgreementRepository {
     if (prior) return prior.fingerprint === mutation.idempotency?.requestFingerprint ? { kind: "replayed", aggregate: clone(this.aggregates.get(prior.agreementId)!) } : { kind: "idempotency_conflict" };
     if (this.aggregates.has(aggregate.agreementId) || [...this.aggregates.values()].some((item) => item.currentVersionId === aggregate.currentVersionId)) return { kind: "duplicate" };
     assertAggregateConsistency(aggregate.lifecycleState, aggregate.currentDocument, aggregate.currentVersionId);
+    const owner = mutation.ownerMembership;
+    if (!owner || owner.agreementId !== aggregate.agreementId || owner.role !== "owner" || owner.state !== "active" || !owner.accountId || !aggregate.currentDocument.parties.some((party) => party.partyId === owner.partyId)) return { kind: "duplicate" };
+    if (this.memberships.some((membership) => membership.agreementId === aggregate.agreementId && membership.role === "owner" && membership.state === "active")) return { kind: "duplicate" };
     this.aggregates.set(aggregate.agreementId, clone(aggregate)); this.versions.set(aggregate.agreementId, [clone(aggregate.currentDocument)]); this.auditRecords.push(clone(mutation.audit));
+    this.memberships.push(clone(owner));
     if (key && mutation.idempotency) this.recordIdempotency(key, { fingerprint: mutation.idempotency.requestFingerprint, agreementId: aggregate.agreementId });
     return { kind: "created", aggregate: clone(aggregate) };
   }
@@ -44,7 +49,7 @@ export class InMemoryAgreementRepository implements AgreementRepository {
   async list(query: AgreementListQuery): Promise<AgreementPage> {
     const binding = queryBinding(query); const scope = scopeKey(query.scope); let boundary: CursorPayload | undefined;
     if (query.cursor) { try { boundary = decode(query.cursor); } catch { throw new Error("INVALID_CURSOR"); } if (boundary.query !== binding || boundary.scope !== scope || boundary.expiresAt <= query.now) throw new Error("INVALID_CURSOR"); }
-    const items = [...this.aggregates.values()].filter((item) => item.provenance.createdByActorId === query.scope.actorId)
+    const allowed = new Set(query.scope.agreementIds); const items = [...this.aggregates.values()].filter((item) => allowed.has(item.agreementId))
       .filter((item) => !query.lifecycleState || item.lifecycleState === query.lifecycleState)
       .filter((item) => !query.versionState || item.currentDocument.versionState === query.versionState)
       .filter((item) => !query.protectionMode || item.currentDocument.protectionPolicy.mode === query.protectionMode)
@@ -61,6 +66,9 @@ export class InMemoryAgreementRepository implements AgreementRepository {
     const current = this.aggregates.get(agreementId); if (!current) return { kind: "not_found" };
     if (current.currentVersionId !== precondition.expectedCurrentVersionId) return { kind: "version_conflict", currentVersionId: current.currentVersionId };
     const history = this.versions.get(agreementId)!;
+    const boundPartyIds = new Set(this.memberships.filter((membership) => membership.agreementId === agreementId && membership.state !== "revoked").map((membership) => membership.partyId));
+    const nextPartyIds = new Set(next.parties.map((party) => party.partyId));
+    if ([...boundPartyIds].some((partyId) => !nextPartyIds.has(partyId))) throw new Error("BOUND_PARTY_REMOVED");
     if (next.agreementId !== agreementId || next.previousVersionId !== current.currentVersionId || next.agreementVersion !== current.currentDocument.agreementVersion + 1 || history.some((item) => item.versionId === next.versionId)) throw new Error("INVALID_NEXT_VERSION");
     const updated: AgreementAggregate = { ...current, currentVersionId: next.versionId, lifecycleState: next.versionState === "proposed" ? "in_review" : "draft", currentDocument: clone(next), updatedAt: next.createdAt, provenance: { ...current.provenance, lastChangedByActorId: mutation.audit.actorId, correlationId: mutation.audit.correlationId } };
     this.aggregates.set(agreementId, clone(updated)); history.push(clone(next)); this.auditRecords.push(clone(mutation.audit));
@@ -69,4 +77,8 @@ export class InMemoryAgreementRepository implements AgreementRepository {
   }
   getAuditRecordsForTest() { return clone(this.auditRecords); }
   getVersionsForTest(agreementId: string) { return clone(this.versions.get(agreementId) ?? []); }
+  async findActive(agreementId: string, accountId: string) { const value = this.memberships.find((membership) => membership.agreementId === agreementId && membership.accountId === accountId && membership.state === "active" && membership.role !== "observer"); return value ? clone(value) : null; }
+  async listActiveAgreementIds(accountId: string) { return [...new Set(this.memberships.filter((membership) => membership.accountId === accountId && membership.state === "active" && membership.role !== "observer").map((membership) => membership.agreementId))]; }
+  async listForAgreement(agreementId: string) { return clone(this.memberships.filter((membership) => membership.agreementId === agreementId)); }
+  addMembershipForTest(membership: AgreementMembership) { if (membership.state !== "revoked" && this.memberships.some((item) => item.agreementId === membership.agreementId && item.accountId === membership.accountId && item.partyId === membership.partyId && item.state !== "revoked")) throw new Error("DUPLICATE_MEMBERSHIP"); if (membership.role === "owner" && membership.state === "active" && this.memberships.some((item) => item.agreementId === membership.agreementId && item.role === "owner" && item.state === "active")) throw new Error("SINGLE_OWNER_REQUIRED"); this.memberships.push(clone(membership)); }
 }

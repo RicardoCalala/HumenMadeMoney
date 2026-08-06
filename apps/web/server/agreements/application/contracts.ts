@@ -21,16 +21,20 @@ export interface AgreementAggregate {
 }
 
 export interface RequestContext {
-  actorId: string;
+  principal: { kind: "anonymous" } | { kind: "account"; accountId: string; sessionId: string; accountState: "active" | "suspended" | "disabled"; assurance: "development" };
   requestId: string;
   correlationId: string;
-  source: "api" | "test";
+  source: "api" | "server_page" | "test";
 }
 
 export interface AccessDecision { allowed: boolean; partyId?: PartyId; scopeId?: string }
 export interface AgreementAccessPolicy {
   authorize(context: RequestContext, action: AgreementAction, resource?: AgreementAggregate): Promise<AccessDecision>;
 }
+
+export type AgreementMembershipRole = "owner" | "participant" | "reviewer" | "observer";
+export type AgreementMembershipState = "active" | "pending_invitation" | "revoked";
+export interface AgreementMembership { agreementId: AgreementId; accountId?: string; partyId: PartyId; role: AgreementMembershipRole; state: AgreementMembershipState; createdAt: ISODateTime; createdByAccountId: string; activatedAt?: ISODateTime; revokedAt?: ISODateTime }
 
 export type CreateAgreementContent = Omit<AgreementLanguageDocument, "agreementId" | "agreementVersion" | "versionId" | "previousVersionId" | "versionState" | "amendmentKind" | "createdAt" | "createdByPartyId">;
 export type NextDraftContent = Omit<AgreementLanguageDocument, "agreementId" | "agreementVersion" | "versionId" | "previousVersionId" | "versionState" | "amendmentKind" | "createdAt" | "createdByPartyId">;

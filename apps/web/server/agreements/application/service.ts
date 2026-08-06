@@ -11,15 +11,19 @@ export class AgreementService {
   private readonly repository: AgreementRepository; private readonly access: AgreementAccessPolicy; private readonly clock: Clock; private readonly ids: IdGenerator; private readonly observability?: AgreementObservabilitySink;
   constructor(repository: AgreementRepository, access: AgreementAccessPolicy, clock: Clock, ids: IdGenerator, observability?: AgreementObservabilitySink) { this.repository = repository; this.access = access; this.clock = clock; this.ids = ids; this.observability = observability; }
   private async require(context: RequestContext, action: "create" | "list" | "read" | "update", resource?: AgreementAggregate) {
+    if (context.principal.kind !== "account") throw new AgreementApplicationError("AUTHENTICATION_REQUIRED", "Sign in to continue.");
+    if (context.principal.accountState === "suspended") throw new AgreementApplicationError("ACCOUNT_SUSPENDED", "This account is unavailable.");
+    if (context.principal.accountState === "disabled") throw new AgreementApplicationError("ACCOUNT_DISABLED", "This account is unavailable.");
     const decision = await this.access.authorize(context, action, resource);
     if (!decision.allowed) throw new AgreementApplicationError("PERMISSION_DENIED", "The requested resource was not found.");
     return decision;
   }
   private resource(aggregate: AgreementAggregate, canUpdate: boolean): AgreementResource { return { agreementId: aggregate.agreementId, currentVersionId: aggregate.currentVersionId, lifecycleState: aggregate.lifecycleState, document: structuredClone(aggregate.currentDocument), createdAt: aggregate.createdAt, updatedAt: aggregate.updatedAt, capabilities: { canRead: true, canUpdateDraft: canUpdate && aggregate.lifecycleState !== "accepted" } }; }
   private audit(context: RequestContext, action: string, agreementId: string, versionId: string, previousVersionId: string | undefined, occurredAt: string, explanation: string): AuditRecord {
-    return { eventId: this.ids("audit"), agreementId, versionId, actorType: "participant", actorId: context.actorId, action, occurredAt, recordedAt: occurredAt, correlationId: context.correlationId, causationId: context.requestId, sourceSystem: "agreement-api-v1", relatedObjectIds: previousVersionId ? [previousVersionId, versionId] : [versionId], explanation };
+    if (context.principal.kind !== "account") throw new AgreementApplicationError("AUTHENTICATION_REQUIRED", "Sign in to continue.");
+    return { eventId: this.ids("audit"), agreementId, versionId, actorType: "participant", actorId: context.principal.accountId, action, occurredAt, recordedAt: occurredAt, correlationId: context.correlationId, causationId: context.requestId, sourceSystem: "agreement-api-v1", relatedObjectIds: previousVersionId ? [previousVersionId, versionId] : [versionId], explanation };
   }
-  private metadata(context: RequestContext, operation: "create" | "update", audit: AuditRecord, command: { idempotency?: { key: string; requestFingerprint: string } }, agreementId?: string): AgreementMutationMetadata { return { audit, idempotency: command.idempotency ? { scope: { actorId: context.actorId, operation, agreementId }, key: command.idempotency.key, requestFingerprint: command.idempotency.requestFingerprint } : undefined }; }
+  private metadata(context: RequestContext, operation: "create" | "update", audit: AuditRecord, command: { idempotency?: { key: string; requestFingerprint: string } }, agreementId?: string): AgreementMutationMetadata { if (context.principal.kind !== "account") throw new AgreementApplicationError("AUTHENTICATION_REQUIRED", "Sign in to continue."); return { audit, idempotency: command.idempotency ? { scope: { actorId: context.principal.accountId, operation, agreementId }, key: command.idempotency.key, requestFingerprint: command.idempotency.requestFingerprint } : undefined }; }
   private validate(document: AgreementLanguageDocument) { try { const result = validateAgreementDocument(document); if (!result.valid) throw new AgreementApplicationError("AGREEMENT_VALIDATION_FAILED", "The agreement terms need correction before they can be saved.", { fieldErrors: result.errors }); } catch (error) { if (error instanceof AgreementApplicationError) throw error; throw new AgreementApplicationError("INVALID_REQUEST", "The agreement content shape is malformed."); } }
 
   async create(context: RequestContext, command: CreateAgreementCommand): Promise<{ resource: AgreementResource; replayed: boolean }> {
@@ -27,8 +31,11 @@ export class AgreementService {
     const now = this.clock().toISOString(); const agreementId = this.ids("agreement"); const versionId = this.ids("version");
     const document: AgreementLanguageDocument = { ...structuredClone(command.content), agreementId, agreementVersion: 1, versionId, versionState: "draft", createdAt: now, createdByPartyId: decision.partyId };
     this.validate(document);
-    const aggregate: AgreementAggregate = { agreementId, currentVersionId: versionId, lifecycleState: "draft", currentDocument: document, createdAt: now, updatedAt: now, provenance: { createdByActorId: context.actorId, lastChangedByActorId: context.actorId, correlationId: context.correlationId, source: "api" } };
-    const result = await this.repository.create(aggregate, this.metadata(context, "create", this.audit(context, "agreement.created", agreementId, versionId, undefined, now, "Created agreement draft version 1."), command));
+    if (context.principal.kind !== "account") throw new AgreementApplicationError("AUTHENTICATION_REQUIRED", "Sign in to continue.");
+    const aggregate: AgreementAggregate = { agreementId, currentVersionId: versionId, lifecycleState: "draft", currentDocument: document, createdAt: now, updatedAt: now, provenance: { createdByActorId: context.principal.accountId, lastChangedByActorId: context.principal.accountId, correlationId: context.correlationId, source: "api" } };
+    const metadata = this.metadata(context, "create", this.audit(context, "agreement.created", agreementId, versionId, undefined, now, "Created agreement draft version 1."), command);
+    metadata.ownerMembership = { agreementId, accountId: context.principal.accountId, partyId: decision.partyId, role: "owner", state: "active", createdAt: now, createdByAccountId: context.principal.accountId, activatedAt: now };
+    const result = await this.repository.create(aggregate, metadata);
     if (result.kind === "idempotency_conflict") throw new AgreementApplicationError("IDEMPOTENCY_KEY_REUSED", "This idempotency key was already used for a different request.");
     if (result.kind === "duplicate") throw new AgreementApplicationError("INTERNAL_ERROR", "The agreement could not be created.", { retryable: true });
     if (result.kind === "created") await this.observability?.mutationCommitted({ action: "create", agreementId: result.aggregate.agreementId, requestId: context.requestId });
@@ -42,8 +49,11 @@ export class AgreementService {
   }
   async list(context: RequestContext, command: ListAgreementsCommand): Promise<AgreementPageResult> {
     const decision = await this.require(context, "list"); if (!decision.scopeId) throw new AgreementApplicationError("PERMISSION_DENIED", "Agreement scope is unavailable.");
-    let page; try { page = await this.repository.list({ ...command, scope: { actorId: context.actorId, scopeId: decision.scopeId }, now: this.clock().toISOString() }); } catch { throw new AgreementApplicationError("INVALID_REQUEST", "The pagination cursor is invalid or expired."); }
-    return { data: page.items.map((item) => this.resource(item, item.lifecycleState !== "accepted")), page: { nextCursor: page.nextCursor, hasMore: page.hasMore } };
+    if (context.principal.kind !== "account") throw new AgreementApplicationError("AUTHENTICATION_REQUIRED", "Sign in to continue.");
+    const agreementIds = await this.repository.listActiveAgreementIds(context.principal.accountId);
+    let page; try { page = await this.repository.list({ ...command, scope: { accountId: context.principal.accountId, scopeId: decision.scopeId, agreementIds }, now: this.clock().toISOString() }); } catch { throw new AgreementApplicationError("INVALID_REQUEST", "The pagination cursor is invalid or expired."); }
+    const data = await Promise.all(page.items.map(async (item) => this.resource(item, (await this.access.authorize(context, "update", item)).allowed)));
+    return { data, page: { nextCursor: page.nextCursor, hasMore: page.hasMore } };
   }
   async update(context: RequestContext, command: UpdateAgreementCommand): Promise<{ resource: AgreementResource; replayed: boolean }> {
     await this.require(context, "update"); const current = await this.repository.getById(command.agreementId);

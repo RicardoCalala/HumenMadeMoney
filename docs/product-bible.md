@@ -83,7 +83,7 @@ Supporting capabilities are **identity and access**, **evidence**, **verificatio
 
 1. **Draft** — a creator describes the commitment, participants, terms, evidence, and optional protection.
 2. **Review** — invited participants inspect changes, ask questions, or propose revisions.
-3. **Accepted** — all required parties explicitly accept a specific version.
+3. **Accepted** — all required parties unanimously accept a specific version in the MVP.
 4. **Protected or active** — required funding is confirmed, or a non-funded/intent agreement begins.
 5. **In progress** — milestones, evidence, and events are recorded.
 6. **Verification** — evidence is assessed against the accepted terms.
@@ -91,7 +91,7 @@ Supporting capabilities are **identity and access**, **evidence**, **verificatio
 8. **Resolution** — funds settle, obligations are recorded as complete, the agreement expires, or another declared outcome occurs.
 9. **Closed** — the final record remains available according to retention rules.
 
-State transitions must be explicit, authorized, idempotent where relevant, and captured in the history. Cancellation, expiry, amendment, insufficient evidence, and dispute are first-class paths.
+State transitions must be explicit, authorized, idempotent where relevant, and captured in the history. Material amendments require renewed acceptance; cosmetic metadata changes do not. A creator may cancel before acceptance, while post-acceptance cancellation follows the accepted policy and required consent. Cancellation, expiry, amendment, insufficient evidence, and dispute are first-class paths.
 
 ## Primary user journeys
 
@@ -113,7 +113,7 @@ The system compares evidence with agreed conditions and produces an explainable 
 
 ### Resolve and settle
 
-Authorized parties approve, dispute, cancel, expire, refund, release, or otherwise close the agreement according to its policy. Every consequential action receives a clear confirmation and durable record.
+AI or MCP may assess evidence and propose a resolution but never holds fund-release authority. After a configurable review window (24 hours by product default), a separate deterministic settlement service may execute only when the outcome is uncontested, the accepted authorization policy permits it, and the financial-safety gate is clear. A dispute or compliance hold freezes execution; disputes require human review, an auditable outcome, and a bounded escalation or appeal path.
 
 ### Repeat through organizations
 
@@ -135,7 +135,7 @@ Navigation should reflect only capabilities that exist and that a user may acces
 
 AI may help users translate intent into structured terms, identify ambiguity, suggest evidence criteria, summarize activity, monitor authorized sources, compare evidence with conditions, flag risk, and draft explanations.
 
-AI must not silently change accepted terms, fabricate evidence, imply certainty unsupported by sources, expose one party's private information to another, or make irreversible financial or legal decisions outside an explicit policy. Outputs should identify sources, relevant agreement terms, uncertainty, and whether a human can override or appeal. Model and prompt changes that affect decisions require evaluation and traceability.
+AI must not silently change accepted terms, fabricate evidence, imply certainty unsupported by sources, expose one party's private information to another, directly release funds, or make irreversible financial or legal decisions. Outputs should identify sources, relevant agreement terms, uncertainty, and whether a human can override or appeal. Private agreement evidence is not used for model training by default. Model and prompt changes that affect decisions require evaluation and traceability.
 
 ## Trust, safety, and business principles
 
@@ -143,9 +143,12 @@ AI must not silently change accepted terms, fabricate evidence, imply certainty 
 - Separate identity claims, participant assertions, third-party facts, and AI inferences.
 - Use least privilege and step-up confirmation for sensitive actions.
 - Make fees and incentives visible before commitment.
-- Do not monetize dispute outcomes or optimize for locked funds.
+- Allow solo agreements but keep them non-financial in the MVP; outcome-contingent transfers require at least two valid economic sides, and HMM never becomes a counterparty merely because a side is missing.
+- Earn revenue through subscriptions or disclosed platform fees, never participant losses; do not monetize dispute outcomes or optimize for locked funds.
+- Put future identity/KYC, sanctions, transaction monitoring, funding-source, amount/velocity, risk, hold, audit, and human compliance-review controls behind a Financial Safety boundary. Holds override settlement timers; circular/self-dealing flows and post-outcome destination changes are prohibited.
 - Provide reporting and escalation paths for abuse, fraud, coercion, and compromised accounts.
-- Design for applicable legal and regulatory review before launching custody, payments, identity, or automated settlement in a jurisdiction.
+- Default private evidence access to participants and authorized reviewers, minimize collection, preserve provenance, and support configurable retention plus future export/deletion controls.
+- Require qualified legal/compliance review and appropriate regulated payment/custody partners before launching real money in any applicable jurisdiction.
 
 ## Success measures
 

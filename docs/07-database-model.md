@@ -44,7 +44,9 @@ This conceptual model supports the agreement lifecycle defined in the Product Bi
 
 `protection_accounts` or provider references exist only for funded agreements. `funding_intents` records conditional intent, authorization scope, expiry, and status; it never represents guaranteed funds.
 
-`transactions` records requested and provider-observed money events using minor units, currency, idempotency key, provider reference, status, and reconciliation state. `settlement_instructions` records an authorized instruction; `settlement_attempts` records execution and provider results. AI output cannot create either without an explicit authorization boundary.
+`transactions` records requested and provider-observed money events using minor units, currency, idempotency key, provider reference, status, and reconciliation state. `settlement_instructions` records an instruction created only after the accepted policy, configurable review window, dispute state, required authorization, and Financial Safety gate are satisfied; `settlement_attempts` records deterministic execution and provider results. AI output may support a proposed resolution but never creates release authority or executes either record directly.
+
+`financial_safety_reviews` (or equivalent protected records) represents `clear`, `review_required`, `held`, and `restricted` gates and future identity/KYC, sanctions, transaction-monitoring, funding-source, amount/velocity, risk, hold, and reviewer context. Holds override settlement timers. Settlement destinations are fixed before outcomes and changes are separately authorized and audited. Solo agreements are non-financial in the MVP; contingent financial agreements require two valid economic sides.
 
 ### Disputes and activity
 

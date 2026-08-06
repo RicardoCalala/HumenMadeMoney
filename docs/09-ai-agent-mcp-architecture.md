@@ -8,7 +8,7 @@ This document defines how AI may assist agreement workflows while preserving par
 
 AI may observe authorized context, explain terms, structure drafts, identify ambiguity, find evidence candidates, compare evidence with accepted conditions, flag risk, and recommend next actions. AI does not silently change accepted terms, fabricate evidence, adjudicate disputes, release funds, or execute an irreversible legal or financial action.
 
-Consequential execution belongs to domain services that independently validate the actor, accepted agreement version, policy, current state, and idempotency. Low-confidence, contested, or high-impact outcomes route to human review.
+Consequential execution belongs to domain services that independently validate the actor, accepted agreement version, policy, current state, dispute window, Financial Safety gate, and idempotency. AI never holds fund-release authority. An uncontested proposed resolution may later be executed by a deterministic settlement service after the configurable review window (24 hours by product default) only when every policy and compliance condition is clear. Disputes freeze execution and require explicit human review and authorization.
 
 ## Logical capabilities
 
@@ -30,11 +30,13 @@ These are separable capabilities, not necessarily independent autonomous agents:
 5. Evaluate each condition and record supporting and conflicting evidence.
 6. Produce a structured assessment with uncertainty and missing information.
 7. Route to the appropriate participant, deterministic policy, or human reviewer.
-8. Record any separately authorized resolution or settlement action in the domain audit trail.
+8. Open the configured dispute/review window for a proposed resolution.
+9. Freeze and route disputes to auditable human review, or send an uncontested proposal through the Financial Safety gate.
+10. Let the separate deterministic settlement service execute only when every authorization, policy, state, and compliance condition is clear; record the action in the audit trail.
 
 ## Confidence and escalation
 
-Confidence thresholds are policy-specific and must be calibrated with evaluation data; percentages alone never authorize action. High confidence may support a recommendation. Medium confidence requests more evidence or review. Low confidence, conflicting evidence, model/tool failure, dispute, or financial/legal impact requires human review or a safe no-action state.
+Confidence thresholds are policy-specific and must be calibrated with evaluation data; percentages alone never authorize action. High confidence may support a proposed resolution but cannot bypass the review window, a dispute, authorization, or compliance. Medium confidence requests more evidence or review. Low confidence, conflicting evidence, model/tool failure, or dispute requires human review or a safe no-action state.
 
 ## MCP boundaries
 
@@ -60,6 +62,7 @@ Recommended records are `ai_runs`, `tool_calls`, `evidence_sources`, `assessment
 - Apply cost, latency, token, retry, and concurrency limits.
 - Make model/prompt changes traceable and review quality across user groups.
 - Require explicit authorization before monitoring or using private sources.
+- Default private evidence to participant and authorized-reviewer access, minimize model context, preserve provenance, and do not use private agreement evidence for training by default. Retention is configurable pending legal/privacy requirements, with future export and deletion controls.
 
 ## Future expansion
 

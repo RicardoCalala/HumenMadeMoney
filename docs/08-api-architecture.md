@@ -66,7 +66,7 @@ Intent responses explicitly distinguish conditional intent from reserved funds. 
 - `POST /agreements/{id}/settlement-instructions`
 - `GET /settlement-attempts/{id}`
 
-Only an authorized person or an explicit reviewed deterministic policy can create a settlement instruction. Execution is performed by a bounded settlement service after revalidating authorization and current state; AI cannot call the payment provider or release funds directly.
+An accepted deterministic policy may create a settlement instruction only after a configurable review window, with no dispute and a `clear` Financial Safety gate. Execution is performed by a bounded settlement service after revalidating the exact version, policy authorization, current state, destination integrity, compliance state, and idempotency; AI cannot call the payment provider, hold release authority, or release funds directly. A dispute freezes execution for explicit human review and authorization, and a compliance hold overrides the timer.
 
 ## Events
 

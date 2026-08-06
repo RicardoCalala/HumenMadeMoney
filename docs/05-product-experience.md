@@ -34,7 +34,7 @@ Drafts remain reversible. AI may identify ambiguity and suggest clearer language
 
 ### 3. Review and accept
 
-Invitees see the same version, their responsibilities, evidence rules, financial exposure when relevant, and the resolution path. Material amendments create a new version and reset affected acceptance. Acceptance is explicit and attributable.
+Invitees see the same version, their responsibilities, evidence rules, financial exposure when relevant, and the resolution path. MVP activation requires unanimous acceptance by all required parties. Material amendments create a new version and require renewed acceptance; cosmetic metadata changes do not. Acceptance is explicit and attributable. The creator may cancel before acceptance; afterward, cancellation follows the accepted policy and required consent.
 
 ### 4. Activate or protect
 
@@ -50,7 +50,7 @@ The system compares evidence with accepted terms and returns an assessment conta
 
 ### 7. Resolve and close
 
-Only an authorized actor or explicit approved policy may trigger a consequential transition. The interface confirms the exact outcome before recording completion, cancellation, expiry, refund, release, or another declared resolution. AI never directly releases funds or makes an irreversible legal or financial decision.
+AI/MCP assessment may produce a proposed resolution. The interface presents the configurable review window (24 hours by default), remaining time, dispute action, Financial Safety state, and why execution can or cannot proceed. A clear, uncontested outcome may be executed by a separate deterministic settlement service after all accepted policy and authorization conditions pass. AI never directly releases funds. A dispute or compliance hold freezes execution; dispute review records the human reviewer, evidence, outcome, and bounded appeal path.
 
 ## Core surfaces
 

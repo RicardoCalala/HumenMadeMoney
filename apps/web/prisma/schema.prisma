@@ -51,6 +51,49 @@ enum MembershipState {
   revoked
 }
 
+enum EvidenceLifecycle {
+  active
+  superseded
+  withdrawn
+  revoked
+}
+
+enum EvidenceAvailability {
+  available
+  missing
+  inaccessible
+  stale
+  revoked
+}
+
+enum EvidenceIntegrity {
+  unverified
+  verified
+  failed
+}
+
+enum EvidenceValidation {
+  pending
+  valid
+  invalid
+}
+
+enum AssessmentStatus {
+  pending
+  completed
+  failed
+  superseded
+}
+
+enum HumanReviewState {
+  open
+  assigned
+  in_review
+  completed
+  cancelled
+  superseded
+}
+
 model Account {
   id                 String                @id
   state              AccountState
@@ -63,6 +106,12 @@ model Account {
   memberships        AgreementMembership[] @relation("MembershipAccount")
   createdMemberships AgreementMembership[] @relation("MembershipCreator")
   acceptances        AgreementAcceptance[]
+  evidenceItems      EvidenceItem[]        @relation("EvidenceCreator")
+  evidenceRevisions  EvidenceRevision[]    @relation("EvidenceSubmitter")
+  evidenceSets       EvidenceSet[]         @relation("EvidenceSetCreator")
+  reviewRequests     HumanReviewRequest[]  @relation("ReviewRequester")
+  assignedReviews    HumanReviewRequest[]  @relation("ReviewAssignee")
+  reviewerDecisions  ReviewerDecision[]
 
   @@map("accounts")
 }
@@ -101,22 +150,28 @@ model Session {
 }
 
 model Agreement {
-  id                   String                  @id
-  currentVersionId     String                  @unique @map("current_version_id")
-  lifecycleState       AgreementLifecycleState @map("lifecycle_state")
-  createdAt            DateTime                @map("created_at") @db.Timestamptz(3)
-  updatedAt            DateTime                @map("updated_at") @db.Timestamptz(3)
-  createdByActorId     String                  @map("created_by_actor_id")
-  lastChangedByActorId String                  @map("last_changed_by_actor_id")
-  correlationId        String                  @map("correlation_id")
+  id                   String                    @id
+  currentVersionId     String                    @unique @map("current_version_id")
+  lifecycleState       AgreementLifecycleState   @map("lifecycle_state")
+  createdAt            DateTime                  @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                  @map("updated_at") @db.Timestamptz(3)
+  createdByActorId     String                    @map("created_by_actor_id")
+  lastChangedByActorId String                    @map("last_changed_by_actor_id")
+  correlationId        String                    @map("correlation_id")
   source               String
-  revision             Int                     @default(0)
-  versions             AgreementVersion[]      @relation("AgreementVersions")
-  currentVersion       AgreementVersion        @relation("CurrentVersion", fields: [id, currentVersionId], references: [agreementId, id], onDelete: Restrict)
+  revision             Int                       @default(0)
+  versions             AgreementVersion[]        @relation("AgreementVersions")
+  currentVersion       AgreementVersion          @relation("CurrentVersion", fields: [id, currentVersionId], references: [agreementId, id], onDelete: Restrict)
   memberships          AgreementMembership[]
   idempotencyRecords   IdempotencyRecord[]
   auditRecords         AuditRecord[]
   acceptances          AgreementAcceptance[]
+  evidenceItems        EvidenceItem[]
+  evidenceSets         EvidenceSet[]
+  assessments          Assessment[]
+  reviewRequests       HumanReviewRequest[]
+  reviewerDecisions    ReviewerDecision[]
+  evidenceEvents       EvidenceProvenanceEvent[]
 
   @@unique([id, currentVersionId])
   @@index([updatedAt(sort: Desc), id])
@@ -124,25 +179,32 @@ model Agreement {
 }
 
 model AgreementVersion {
-  id                String                  @id
-  agreementId       String                  @map("agreement_id")
-  agreementVersion  Int                     @map("agreement_version")
-  previousVersionId String?                 @map("previous_version_id")
-  schemaVersion     String                  @map("schema_version")
-  versionState      AgreementVersionState   @map("version_state")
-  amendmentKind     AmendmentKind?          @map("amendment_kind")
-  createdAt         DateTime                @map("created_at") @db.Timestamptz(3)
-  createdByPartyId  String                  @map("created_by_party_id")
-  document          Json                    @db.JsonB
-  protectionMode    String                  @map("protection_mode")
-  documentDigest    String?                 @map("document_digest")
-  agreement         Agreement               @relation("AgreementVersions", fields: [agreementId], references: [id], onDelete: Restrict)
-  currentFor        Agreement?              @relation("CurrentVersion")
-  previousVersion   AgreementVersion?       @relation("VersionPredecessor", fields: [previousVersionId], references: [id], onDelete: Restrict)
-  successors        AgreementVersion[]      @relation("VersionPredecessor")
+  id                String                    @id
+  agreementId       String                    @map("agreement_id")
+  agreementVersion  Int                       @map("agreement_version")
+  previousVersionId String?                   @map("previous_version_id")
+  schemaVersion     String                    @map("schema_version")
+  versionState      AgreementVersionState     @map("version_state")
+  amendmentKind     AmendmentKind?            @map("amendment_kind")
+  createdAt         DateTime                  @map("created_at") @db.Timestamptz(3)
+  createdByPartyId  String                    @map("created_by_party_id")
+  document          Json                      @db.JsonB
+  protectionMode    String                    @map("protection_mode")
+  documentDigest    String?                   @map("document_digest")
+  agreement         Agreement                 @relation("AgreementVersions", fields: [agreementId], references: [id], onDelete: Restrict)
+  currentFor        Agreement?                @relation("CurrentVersion")
+  previousVersion   AgreementVersion?         @relation("VersionPredecessor", fields: [previousVersionId], references: [id], onDelete: Restrict)
+  successors        AgreementVersion[]        @relation("VersionPredecessor")
   parties           AgreementVersionParty[]
   auditRecords      AuditRecord[]
   acceptances       AgreementAcceptance[]
+  evidenceItems     EvidenceItem[]
+  evidenceRevisions EvidenceRevision[]
+  evidenceSets      EvidenceSet[]
+  assessments       Assessment[]
+  reviewRequests    HumanReviewRequest[]
+  reviewerDecisions ReviewerDecision[]
+  evidenceEvents    EvidenceProvenanceEvent[]
 
   @@unique([agreementId, agreementVersion])
   @@unique([agreementId, id])
@@ -217,6 +279,8 @@ model IdempotencyRecord {
   requestFingerprint String     @map("request_fingerprint")
   agreementId        String?    @map("agreement_id")
   resultVersionId    String?    @map("result_version_id")
+  resultResourceType String?    @map("result_resource_type")
+  resultResourceId   String?    @map("result_resource_id")
   createdAt          DateTime   @map("created_at") @db.Timestamptz(3)
   expiresAt          DateTime   @map("expires_at") @db.Timestamptz(3)
   agreement          Agreement? @relation(fields: [agreementId], references: [id], onDelete: Restrict)
@@ -224,6 +288,265 @@ model IdempotencyRecord {
   @@unique([actorId, operation, normalizedScope, keyDigest])
   @@index([expiresAt])
   @@map("idempotency_records")
+}
+
+model EvidenceItem {
+  id                    String                    @id
+  agreementId           String                    @map("agreement_id")
+  versionId             String                    @map("version_id")
+  evidenceRequirementId String                    @map("evidence_requirement_id")
+  currentRevisionId     String?                   @unique @map("current_revision_id")
+  lifecycle             EvidenceLifecycle
+  createdAt             DateTime                  @map("created_at") @db.Timestamptz(3)
+  createdByAccountId    String                    @map("created_by_account_id")
+  revision              Int                       @default(1)
+  agreement             Agreement                 @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version               AgreementVersion          @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  creator               Account                   @relation("EvidenceCreator", fields: [createdByAccountId], references: [id], onDelete: Restrict)
+  revisions             EvidenceRevision[]        @relation("EvidenceItemRevisions")
+  currentRevision       EvidenceRevision?         @relation("EvidenceCurrentRevision", fields: [id, currentRevisionId], references: [evidenceId, id], onDelete: Restrict)
+  events                EvidenceProvenanceEvent[]
+
+  @@unique([id, agreementId, versionId])
+  @@unique([id, currentRevisionId])
+  @@index([agreementId, versionId, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([agreementId, evidenceRequirementId, lifecycle])
+  @@map("evidence_items")
+}
+
+model EvidenceRevision {
+  id                   String                      @id
+  evidenceId           String                      @map("evidence_id")
+  agreementId          String                      @map("agreement_id")
+  versionId            String                      @map("version_id")
+  revisionNumber       Int                         @map("revision_number")
+  supersedesRevisionId String?                     @unique @map("supersedes_revision_id")
+  criterionIds         Json                        @map("criterion_ids") @db.JsonB
+  evidenceClass        String                      @map("evidence_class")
+  origin               String
+  submittedByPartyId   String?                     @map("submitted_by_party_id")
+  submittedByAccountId String?                     @map("submitted_by_account_id")
+  sourceConstraintId   String                      @map("source_constraint_id")
+  sourceRefKind        String?                     @map("source_ref_kind")
+  sourceRef            String?                     @map("source_ref")
+  sourceDisplayLabel   String?                     @map("source_display_label")
+  observedAt           DateTime?                   @map("observed_at") @db.Timestamptz(3)
+  capturedAt           DateTime                    @map("captured_at") @db.Timestamptz(3)
+  receivedAt           DateTime                    @map("received_at") @db.Timestamptz(3)
+  availability         EvidenceAvailability
+  integrity            EvidenceIntegrity
+  validation           EvidenceValidation
+  validationReasons    Json                        @map("validation_reasons") @db.JsonB
+  metadata             Json                        @db.JsonB
+  contentDigest        String?                     @map("content_digest")
+  item                 EvidenceItem                @relation("EvidenceItemRevisions", fields: [evidenceId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  currentFor           EvidenceItem?               @relation("EvidenceCurrentRevision")
+  version              AgreementVersion            @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  submitter            Account?                    @relation("EvidenceSubmitter", fields: [submittedByAccountId], references: [id], onDelete: Restrict)
+  predecessor          EvidenceRevision?           @relation("EvidenceRevisionPredecessor", fields: [supersedesRevisionId], references: [id], onDelete: Restrict)
+  successor            EvidenceRevision?           @relation("EvidenceRevisionPredecessor")
+  evidenceSetMembers   EvidenceSetMember[]
+  supportingFindings   AssessmentFindingSupport[]
+  conflictingFindings  AssessmentFindingConflict[]
+  events               EvidenceProvenanceEvent[]
+
+  @@unique([evidenceId, id])
+  @@unique([evidenceId, revisionNumber])
+  @@index([evidenceId, receivedAt(sort: Desc)])
+  @@map("evidence_revisions")
+}
+
+model EvidenceProvenanceEvent {
+  id                 String            @id
+  agreementId        String            @map("agreement_id")
+  versionId          String            @map("version_id")
+  evidenceId         String            @map("evidence_id")
+  evidenceRevisionId String?           @map("evidence_revision_id")
+  actorId            String            @map("actor_id")
+  action             String
+  occurredAt         DateTime          @map("occurred_at") @db.Timestamptz(3)
+  recordedAt         DateTime          @map("recorded_at") @db.Timestamptz(3)
+  correlationId      String            @map("correlation_id")
+  causationId        String?           @map("causation_id")
+  sourceSystem       String            @map("source_system")
+  policyVersion      String            @map("policy_version")
+  explanation        String
+  agreement          Agreement         @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version            AgreementVersion  @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  evidence           EvidenceItem      @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+  revision           EvidenceRevision? @relation(fields: [evidenceRevisionId], references: [id], onDelete: Restrict)
+
+  @@index([agreementId, occurredAt, id])
+  @@index([evidenceId, occurredAt, id])
+  @@map("evidence_provenance_events")
+}
+
+model EvidenceSet {
+  id                      String               @id
+  agreementId             String               @map("agreement_id")
+  versionId               String               @map("version_id")
+  canonicalizationVersion String               @map("canonicalization_version")
+  digest                  String
+  createdAt               DateTime             @map("created_at") @db.Timestamptz(3)
+  createdByAccountId      String               @map("created_by_account_id")
+  agreement               Agreement            @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version                 AgreementVersion     @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  creator                 Account              @relation("EvidenceSetCreator", fields: [createdByAccountId], references: [id], onDelete: Restrict)
+  members                 EvidenceSetMember[]
+  assessments             Assessment[]
+  reviewRequests          HumanReviewRequest[]
+  reviewerDecisions       ReviewerDecision[]
+
+  @@unique([agreementId, versionId, canonicalizationVersion, digest])
+  @@unique([id, agreementId, versionId])
+  @@map("evidence_sets")
+}
+
+model EvidenceSetMember {
+  evidenceSetId      String           @map("evidence_set_id")
+  evidenceRevisionId String           @map("evidence_revision_id")
+  ordinal            Int
+  evidenceSet        EvidenceSet      @relation(fields: [evidenceSetId], references: [id], onDelete: Restrict)
+  evidenceRevision   EvidenceRevision @relation(fields: [evidenceRevisionId], references: [id], onDelete: Restrict)
+
+  @@id([evidenceSetId, evidenceRevisionId])
+  @@unique([evidenceSetId, ordinal])
+  @@map("evidence_set_members")
+}
+
+model Assessment {
+  id                     String                       @id
+  agreementId            String                       @map("agreement_id")
+  versionId              String                       @map("version_id")
+  evidenceSetId          String                       @map("evidence_set_id")
+  supersedesAssessmentId String?                      @unique @map("supersedes_assessment_id")
+  adapterKind            String                       @map("adapter_kind")
+  adapterVersion         String                       @map("adapter_version")
+  policyVersion          String                       @map("policy_version")
+  status                 AssessmentStatus
+  confidence             Json                         @db.JsonB
+  limitations            Json                         @db.JsonB
+  recommendedNextAction  String                       @map("recommended_next_action")
+  occurredAt             DateTime                     @map("occurred_at") @db.Timestamptz(3)
+  revision               Int                          @default(1)
+  agreement              Agreement                    @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version                AgreementVersion             @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  evidenceSet            EvidenceSet                  @relation(fields: [evidenceSetId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  predecessor            Assessment?                  @relation("AssessmentPredecessor", fields: [supersedesAssessmentId], references: [id], onDelete: Restrict)
+  successor              Assessment?                  @relation("AssessmentPredecessor")
+  findings               AssessmentFinding[]
+  reviewRequests         HumanReviewRequest[]
+  decisionConsiderations ReviewerDecisionAssessment[]
+
+  @@unique([id, agreementId, versionId])
+  @@index([agreementId, versionId, occurredAt(sort: Desc), id(sort: Desc)])
+  @@index([evidenceSetId, status])
+  @@map("assessments")
+}
+
+model AssessmentFinding {
+  assessmentId           String                      @map("assessment_id")
+  criterionId            String                      @map("criterion_id")
+  result                 String
+  evidenceRequirementIds Json                        @map("evidence_requirement_ids") @db.JsonB
+  explanation            String
+  limitations            Json                        @db.JsonB
+  assessment             Assessment                  @relation(fields: [assessmentId], references: [id], onDelete: Restrict)
+  supporting             AssessmentFindingSupport[]
+  conflicting            AssessmentFindingConflict[]
+
+  @@id([assessmentId, criterionId])
+  @@map("assessment_findings")
+}
+
+model AssessmentFindingSupport {
+  assessmentId       String            @map("assessment_id")
+  criterionId        String            @map("criterion_id")
+  evidenceRevisionId String            @map("evidence_revision_id")
+  finding            AssessmentFinding @relation(fields: [assessmentId, criterionId], references: [assessmentId, criterionId], onDelete: Restrict)
+  revision           EvidenceRevision  @relation(fields: [evidenceRevisionId], references: [id], onDelete: Restrict)
+
+  @@id([assessmentId, criterionId, evidenceRevisionId])
+  @@map("assessment_finding_support")
+}
+
+model AssessmentFindingConflict {
+  assessmentId       String            @map("assessment_id")
+  criterionId        String            @map("criterion_id")
+  evidenceRevisionId String            @map("evidence_revision_id")
+  finding            AssessmentFinding @relation(fields: [assessmentId, criterionId], references: [assessmentId, criterionId], onDelete: Restrict)
+  revision           EvidenceRevision  @relation(fields: [evidenceRevisionId], references: [id], onDelete: Restrict)
+
+  @@id([assessmentId, criterionId, evidenceRevisionId])
+  @@map("assessment_finding_conflicts")
+}
+
+model HumanReviewRequest {
+  id                   String             @id
+  agreementId          String             @map("agreement_id")
+  versionId            String             @map("version_id")
+  assessmentId         String?            @map("assessment_id")
+  evidenceSetId        String?            @map("evidence_set_id")
+  reasonCodes          Json               @map("reason_codes") @db.JsonB
+  affectedCriterionIds Json               @map("affected_criterion_ids") @db.JsonB
+  requestedByAccountId String             @map("requested_by_account_id")
+  route                String
+  state                HumanReviewState
+  assignedAccountId    String?            @map("assigned_account_id")
+  createdAt            DateTime           @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime           @map("updated_at") @db.Timestamptz(3)
+  revision             Int                @default(1)
+  agreement            Agreement          @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version              AgreementVersion   @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  assessment           Assessment?        @relation(fields: [assessmentId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  evidenceSet          EvidenceSet?       @relation(fields: [evidenceSetId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  requester            Account            @relation("ReviewRequester", fields: [requestedByAccountId], references: [id], onDelete: Restrict)
+  assignee             Account?           @relation("ReviewAssignee", fields: [assignedAccountId], references: [id], onDelete: Restrict)
+  decisions            ReviewerDecision[]
+
+  @@unique([id, agreementId, versionId])
+  @@index([state, createdAt, id])
+  @@index([agreementId, versionId, createdAt(sort: Desc), id(sort: Desc)])
+  @@map("human_review_requests")
+}
+
+model ReviewerDecision {
+  id                   String                       @id
+  reviewRequestId      String                       @map("review_request_id")
+  agreementId          String                       @map("agreement_id")
+  versionId            String                       @map("version_id")
+  evidenceSetId        String?                      @map("evidence_set_id")
+  reviewerAccountId    String                       @map("reviewer_account_id")
+  reviewerPartyId      String                       @map("reviewer_party_id")
+  authorityBasis       String                       @map("authority_basis")
+  decisionType         String                       @map("decision_type")
+  criterionFindings    Json                         @map("criterion_findings") @db.JsonB
+  evidenceRevisionIds  Json                         @map("evidence_revision_ids") @db.JsonB
+  explanation          String
+  limitations          Json                         @db.JsonB
+  createdAt            DateTime                     @map("created_at") @db.Timestamptz(3)
+  supersedesDecisionId String?                      @unique @map("supersedes_decision_id")
+  request              HumanReviewRequest           @relation(fields: [reviewRequestId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  agreement            Agreement                    @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version              AgreementVersion             @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  evidenceSet          EvidenceSet?                 @relation(fields: [evidenceSetId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  reviewer             Account                      @relation(fields: [reviewerAccountId], references: [id], onDelete: Restrict)
+  predecessor          ReviewerDecision?            @relation("ReviewerDecisionPredecessor", fields: [supersedesDecisionId], references: [id], onDelete: Restrict)
+  successor            ReviewerDecision?            @relation("ReviewerDecisionPredecessor")
+  assessments          ReviewerDecisionAssessment[]
+
+  @@index([reviewRequestId, createdAt, id])
+  @@map("reviewer_decisions")
+}
+
+model ReviewerDecisionAssessment {
+  reviewerDecisionId String           @map("reviewer_decision_id")
+  assessmentId       String           @map("assessment_id")
+  decision           ReviewerDecision @relation(fields: [reviewerDecisionId], references: [id], onDelete: Restrict)
+  assessment         Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Restrict)
+
+  @@id([reviewerDecisionId, assessmentId])
+  @@map("reviewer_decision_assessments")
 }
 
 model AuditRecord {

@@ -1,0 +1,9 @@
+import type { RequestContext } from "../agreements/application/contracts.ts";
+import { AgreementApplicationError } from "../agreements/application/errors.ts";
+import { errorResponse, json } from "../agreements/transport/http.ts";
+import { EvidenceError } from "./validation.ts";
+export const key = (request: Request) => { const value = request.headers.get("idempotency-key"); if (!value || !/^[A-Za-z0-9._:-]{1,128}$/.test(value)) throw new EvidenceError("INVALID_REQUEST", "A valid Idempotency-Key is required.", 400); return value; };
+export const fingerprint = async (value: unknown) => { const bytes = new TextEncoder().encode(JSON.stringify(value)); return Buffer.from(await crypto.subtle.digest("SHA-256", bytes)).toString("hex"); };
+export const version = (url: string, body?: Record<string, unknown>) => { const value = body?.versionId ?? new URL(url).searchParams.get("versionId"); if (typeof value !== "string" || !value) throw new EvidenceError("INVALID_REQUEST", "versionId is required.", 400); return value; };
+export const expectedRevision = (request: Request) => { const value = request.headers.get("if-match"); const match = value && /^"revision-(\d+)"$/.exec(value); if (!match) throw new EvidenceError("PRECONDITION_REQUIRED", "If-Match with the expected revision is required.", 428); return Number(match[1]); };
+export function evidenceError(error: unknown, context: RequestContext) { if (error instanceof AgreementApplicationError) return errorResponse(error, context); if (!(error instanceof EvidenceError)) return json({ error: { code: "INTERNAL_ERROR", message: "The request could not be completed.", requestId: context.requestId, retryable: true } }, 500); return json({ error: { code: error.code === "PERMISSION_DENIED" ? "RESOURCE_NOT_FOUND" : error.code, message: error.message, requestId: context.requestId, retryable: false } }, error.status, error.status === 401 ? { "WWW-Authenticate": "Session" } : {}); }

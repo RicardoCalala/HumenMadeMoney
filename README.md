@@ -13,9 +13,9 @@ Human Made Money is in early development. The repository currently contains:
 - a working public marketing site;
 - a reusable web UI foundation;
 - an agreement-first product, design, architecture, and engineering specification;
-- a pnpm/Turborepo workspace prepared for future apps, services, and shared packages.
+- a pnpm/Turborepo workspace with local/test PostgreSQL persistence behind existing application ports.
 
-The Agreement Engine, user accounts, API services, database, evidence and verification workflows, escrow, funding, and settlement are roadmap work—not current production capabilities. All monetary examples and development flows must use simulated funds. No real funds are held, moved, or settled by this repository today.
+The current agreement and development-authentication slice can use disposable in-memory stores or local/test PostgreSQL. This is not production hosting or production authentication. Evidence and verification workflows, escrow, funding, and settlement remain roadmap work. All monetary examples and development flows use simulated funds; no real funds are held, moved, or settled.
 
 ## Product direction
 
@@ -38,11 +38,12 @@ This is a TypeScript monorepo managed with pnpm workspaces and Turborepo.
 
 - **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, and shadcn/base-ui components.
 - **Tooling:** pnpm 11 and Turborepo 2.
-- **Application:** a statically buildable marketing experience in `apps/web`.
+- **Application:** agreement APIs and local development authentication in `apps/web`.
+- **Persistence:** explicitly selected in-memory or PostgreSQL/Prisma adapters for local and test use.
 
 ### Planned, not implemented
 
-The architecture documents describe an Agreement Engine at the center, with separate evidence, verification, escrow/protection, dynamic intent, settlement, identity, and notification responsibilities. Backend services, PostgreSQL/Prisma persistence, authentication, cloud infrastructure, payment providers, and AI orchestration are design decisions or roadmap targets until working code lands.
+The architecture documents describe an Agreement Engine at the center, with separate evidence, verification, escrow/protection, dynamic intent, settlement, identity, and notification responsibilities. Production authentication, cloud infrastructure, payment providers, and AI orchestration remain later decisions.
 
 Read [`docs/04-architecture.md`](docs/04-architecture.md), [`docs/07-database-model.md`](docs/07-database-model.md), and [`docs/08-api-architecture.md`](docs/08-api-architecture.md) for those intended boundaries. Documentation must always distinguish implemented behavior from future architecture.
 
@@ -88,7 +89,26 @@ To run only the web application:
 pnpm --filter web dev
 ```
 
-No database, production credentials, payment account, or cloud access is required for the current site.
+The default adapter is `in_memory`, so no database, production credentials, payment account, or cloud access is required.
+
+### Optional local PostgreSQL persistence
+
+Copy the names from `.env.example` into an ignored `.env.local` and use a fresh local signing secret. Then:
+
+```sh
+docker compose up -d postgres
+DATABASE_URL="postgresql://hmm:hmm_local_only@127.0.0.1:5432/hmm_local?schema=public" pnpm --filter web db:migrate
+DATABASE_URL="postgresql://hmm:hmm_local_only@127.0.0.1:5432/hmm_local?schema=public" pnpm --filter web db:seed
+HMM_PERSISTENCE_ADAPTER=prisma pnpm --filter web dev
+```
+
+The Prisma adapter fails closed when configuration or PostgreSQL is unavailable; it never dual-writes or falls back to memory. Migrations are forward-only. The seed is deterministic and contains only synthetic `.invalid` accounts. The reset command refuses non-local hosts and database names without a distinct `test` or `local` segment:
+
+```sh
+TEST_DATABASE_URL="postgresql://hmm:hmm_local_only@127.0.0.1:5432/hmm_test?schema=public" pnpm --filter web db:reset:test
+```
+
+To run PostgreSQL contract tests, create the dedicated `hmm_test` database, apply the checked-in migration to it, then provide `TEST_DATABASE_URL` to `pnpm --filter web test:postgres`. These local/test facilities do not select a production host, credentials model, retention policy, backup plan, or operating topology.
 
 ## Validation
 

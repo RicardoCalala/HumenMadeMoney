@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountState {
+  active
+  suspended
+  disabled
+}
+
+enum SessionState {
+  active
+  revoked
+  expired
+}
+
+enum AgreementLifecycleState {
+  draft
+  in_review
+  accepted
+}
+
+enum AgreementVersionState {
+  draft
+  proposed
+  accepted
+  superseded
+  withdrawn
+}
+
+enum AmendmentKind {
+  material
+  cosmetic
+}
+
+enum MembershipRole {
+  owner
+  participant
+  reviewer
+  observer
+}
+
+enum MembershipState {
+  active
+  pending_invitation
+  revoked
+}
+
+model Account {
+  id                 String                @id
+  state              AccountState
+  displayName        String                @map("display_name")
+  primaryEmail       String?               @map("primary_email")
+  createdAt          DateTime              @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime              @map("updated_at") @db.Timestamptz(3)
+  localProfiles      LocalAuthProfile[]
+  sessions           Session[]
+  memberships        AgreementMembership[] @relation("MembershipAccount")
+  createdMemberships AgreementMembership[] @relation("MembershipCreator")
+  acceptances        AgreementAcceptance[]
+
+  @@map("accounts")
+}
+
+model LocalAuthProfile {
+  profileId String   @id @map("profile_id")
+  accountId String   @unique @map("account_id")
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@map("local_auth_profiles")
+}
+
+model Session {
+  id                String                @id
+  accountId         String                @map("account_id")
+  tokenDigest       String                @unique @map("token_digest")
+  csrfDigest        String                @map("csrf_digest")
+  state             SessionState
+  assurance         String
+  createdAt         DateTime              @map("created_at") @db.Timestamptz(3)
+  lastSeenAt        DateTime              @map("last_seen_at") @db.Timestamptz(3)
+  idleExpiresAt     DateTime              @map("idle_expires_at") @db.Timestamptz(3)
+  absoluteExpiresAt DateTime              @map("absolute_expires_at") @db.Timestamptz(3)
+  revokedAt         DateTime?             @map("revoked_at") @db.Timestamptz(3)
+  rotation          Int
+  replacedSessionId String?               @map("replaced_session_id")
+  account           Account               @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  replacedSession   Session?              @relation("SessionReplacement", fields: [replacedSessionId], references: [id], onDelete: Restrict)
+  replacements      Session[]             @relation("SessionReplacement")
+  acceptances       AgreementAcceptance[]
+
+  @@index([accountId, state])
+  @@index([state, idleExpiresAt, absoluteExpiresAt])
+  @@map("sessions")
+}
+
+model Agreement {
+  id                   String                  @id
+  currentVersionId     String                  @unique @map("current_version_id")
+  lifecycleState       AgreementLifecycleState @map("lifecycle_state")
+  createdAt            DateTime                @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                @map("updated_at") @db.Timestamptz(3)
+  createdByActorId     String                  @map("created_by_actor_id")
+  lastChangedByActorId String                  @map("last_changed_by_actor_id")
+  correlationId        String                  @map("correlation_id")
+  source               String
+  revision             Int                     @default(0)
+  versions             AgreementVersion[]      @relation("AgreementVersions")
+  currentVersion       AgreementVersion        @relation("CurrentVersion", fields: [id, currentVersionId], references: [agreementId, id], onDelete: Restrict)
+  memberships          AgreementMembership[]
+  idempotencyRecords   IdempotencyRecord[]
+  auditRecords         AuditRecord[]
+  acceptances          AgreementAcceptance[]
+
+  @@unique([id, currentVersionId])
+  @@index([updatedAt(sort: Desc), id])
+  @@map("agreements")
+}
+
+model AgreementVersion {
+  id                String                  @id
+  agreementId       String                  @map("agreement_id")
+  agreementVersion  Int                     @map("agreement_version")
+  previousVersionId String?                 @map("previous_version_id")
+  schemaVersion     String                  @map("schema_version")
+  versionState      AgreementVersionState   @map("version_state")
+  amendmentKind     AmendmentKind?          @map("amendment_kind")
+  createdAt         DateTime                @map("created_at") @db.Timestamptz(3)
+  createdByPartyId  String                  @map("created_by_party_id")
+  document          Json                    @db.JsonB
+  protectionMode    String                  @map("protection_mode")
+  documentDigest    String?                 @map("document_digest")
+  agreement         Agreement               @relation("AgreementVersions", fields: [agreementId], references: [id], onDelete: Restrict)
+  currentFor        Agreement?              @relation("CurrentVersion")
+  previousVersion   AgreementVersion?       @relation("VersionPredecessor", fields: [previousVersionId], references: [id], onDelete: Restrict)
+  successors        AgreementVersion[]      @relation("VersionPredecessor")
+  parties           AgreementVersionParty[]
+  auditRecords      AuditRecord[]
+  acceptances       AgreementAcceptance[]
+
+  @@unique([agreementId, agreementVersion])
+  @@unique([agreementId, id])
+  @@index([agreementId, createdAt])
+  @@map("agreement_versions")
+}
+
+model AgreementVersionParty {
+  agreementId        String                @map("agreement_id")
+  versionId          String                @map("version_id")
+  partyId            String                @map("party_id")
+  acceptanceRequired Boolean               @map("acceptance_required")
+  partyType          String                @map("party_type")
+  roles              Json                  @db.JsonB
+  version            AgreementVersion      @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  acceptances        AgreementAcceptance[]
+
+  @@id([agreementId, versionId, partyId])
+  @@map("agreement_version_parties")
+}
+
+model AgreementMembership {
+  id                 String          @id
+  agreementId        String          @map("agreement_id")
+  accountId          String?         @map("account_id")
+  partyId            String          @map("party_id")
+  role               MembershipRole
+  state              MembershipState
+  createdAt          DateTime        @map("created_at") @db.Timestamptz(3)
+  createdByAccountId String          @map("created_by_account_id")
+  activatedAt        DateTime?       @map("activated_at") @db.Timestamptz(3)
+  revokedAt          DateTime?       @map("revoked_at") @db.Timestamptz(3)
+  agreement          Agreement       @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  account            Account?        @relation("MembershipAccount", fields: [accountId], references: [id], onDelete: Restrict)
+  createdByAccount   Account         @relation("MembershipCreator", fields: [createdByAccountId], references: [id], onDelete: Restrict)
+
+  @@index([accountId, state, agreementId])
+  @@index([agreementId, accountId, state])
+  @@map("agreement_memberships")
+}
+
+model AgreementAcceptance {
+  id               String                @id
+  agreementId      String                @map("agreement_id")
+  versionId        String                @map("version_id")
+  partyId          String                @map("party_id")
+  acceptedAt       DateTime              @map("accepted_at") @db.Timestamptz(3)
+  consentContext   String                @map("consent_context")
+  assuranceContext String                @map("assurance_context")
+  accountId        String?               @map("account_id")
+  sessionId        String?               @map("session_id")
+  recordedAt       DateTime              @map("recorded_at") @db.Timestamptz(3)
+  correlationId    String                @map("correlation_id")
+  agreement        Agreement             @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version          AgreementVersion      @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  party            AgreementVersionParty @relation(fields: [agreementId, versionId, partyId], references: [agreementId, versionId, partyId], onDelete: Restrict)
+  account          Account?              @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  session          Session?              @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+
+  @@unique([versionId, partyId])
+  @@index([agreementId, versionId])
+  @@map("agreement_acceptances")
+}
+
+model IdempotencyRecord {
+  id                 String     @id
+  actorId            String     @map("actor_id")
+  operation          String
+  agreementScopeId   String?    @map("agreement_scope_id")
+  normalizedScope    String     @map("normalized_scope")
+  keyDigest          String     @map("key_digest")
+  requestFingerprint String     @map("request_fingerprint")
+  agreementId        String?    @map("agreement_id")
+  resultVersionId    String?    @map("result_version_id")
+  createdAt          DateTime   @map("created_at") @db.Timestamptz(3)
+  expiresAt          DateTime   @map("expires_at") @db.Timestamptz(3)
+  agreement          Agreement? @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+
+  @@unique([actorId, operation, normalizedScope, keyDigest])
+  @@index([expiresAt])
+  @@map("idempotency_records")
+}
+
+model AuditRecord {
+  id               String           @id
+  agreementId      String           @map("agreement_id")
+  versionId        String           @map("version_id")
+  actorType        String           @map("actor_type")
+  actorId          String           @map("actor_id")
+  action           String
+  occurredAt       DateTime         @map("occurred_at") @db.Timestamptz(3)
+  recordedAt       DateTime         @map("recorded_at") @db.Timestamptz(3)
+  correlationId    String           @map("correlation_id")
+  causationId      String?          @map("causation_id")
+  sourceSystem     String           @map("source_system")
+  policyVersion    String?          @map("policy_version")
+  relatedObjectIds Json             @map("related_object_ids") @db.JsonB
+  explanation      String
+  agreement        Agreement        @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version          AgreementVersion @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+
+  @@index([agreementId, occurredAt, id])
+  @@index([correlationId])
+  @@map("audit_records")
+}

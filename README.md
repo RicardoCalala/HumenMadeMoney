@@ -1,10 +1,10 @@
 # Human Made Money
 
-> The world's most trusted platform for objective human agreements.
+> The trust layer for human agreements.
 
 ## Mission
 
-Human Made Money is a subscription-based escrow platform that securely holds funds for private agreements and automatically resolves outcomes using trusted public data sources and AI-assisted verification.
+Human Made Money helps people create clear agreements, protect commitments, verify outcomes with shared evidence, and settle with confidence. AI-assisted verification and escrow are core capabilities within the platform—not the limits of the brand or every agreement workflow.
 
 ## Status
 

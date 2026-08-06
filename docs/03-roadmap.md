@@ -2,16 +2,16 @@
 
 ## Vision
 
-Human Made Money is building a programmable trust layer that allows humans and AI agents to create, verify, and execute financial agreements.
+Human Made Money is building the trust layer for human agreements: infrastructure that helps people and, over time, authorized AI agents create, verify, protect, and execute clear commitments.
 
 The platform combines:
 
-* Secure escrow
+* Secure escrow when an agreement requires protected funds
 * AI-powered verification
 * Dynamic intent funding
 * Automated settlement
 
-The goal is to remove the need for blind trust between parties.
+The goal is to replace blind trust with clear terms, shared evidence, transparent verification, and dependable execution.
 
 ---
 

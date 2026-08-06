@@ -2,7 +2,7 @@
 
 ## Core Systems
 
-Human Made Money consists of several core engines:
+Human Made Money is an agreement-centered trust layer composed of several core engines. The Agreement Engine is the product center; escrow, intent, verification, and settlement support different agreement needs.
 
 ## 1. Agreement Engine
 
@@ -90,6 +90,6 @@ Responsible for:
 
 ## Strategic Direction
 
-Human Made Money is not only an escrow platform.
+Human Made Money is the trust layer for human agreements, not only an escrow platform.
 
-It is a programmable agreement infrastructure that allows financial commitments to activate automatically when verified conditions occur.
+It is programmable agreement infrastructure that can clarify terms, establish evidence, verify conditions, protect funds when needed, and execute financial commitments. Not every agreement requires escrow, and the architecture should preserve that distinction.

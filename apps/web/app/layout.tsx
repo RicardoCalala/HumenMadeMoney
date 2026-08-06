@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Human Made Money | Trusted agreements",
+  title: "Human Made Money | The trust layer for human agreements",
   description:
-    "AI-guided escrow infrastructure for clear, protected agreements.",
+    "Create clear agreements, verify outcomes with shared evidence, and protect funds when needed.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

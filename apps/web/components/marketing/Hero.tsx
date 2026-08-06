@@ -19,13 +19,13 @@ export function Hero() {
 
         <div className="mx-auto max-w-4xl pt-24 text-center sm:pt-32">
           <p className="mx-auto flex w-fit items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-sm text-teal-100">
-            <Sparkles className="size-3.5" /> AI-powered escrow infrastructure
+            <Sparkles className="size-3.5" /> The trust layer for human agreements
           </p>
           <h1 className="mt-7 text-balance text-5xl font-semibold tracking-[-0.05em] text-white sm:text-7xl">
             Agreements that hold up in the real world.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-slate-300 sm:text-xl">
-            Human Made Money turns a shared promise into a clear, protected agreement—with AI guidance and escrow rules everyone can trust.
+            Human Made Money turns a shared promise into a clear, verifiable agreement—with AI guidance, shared evidence, and protected funds when needed.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" className="h-11 bg-teal-300 px-5 text-slate-950 hover:bg-teal-200" render={<a href="#pricing" />}>

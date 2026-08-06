@@ -1,0 +1,5 @@
+const events = ["Agreement created", "Funds secured", "Work and evidence shared", "Outcome confirmed", "Funds released"];
+
+export function EscrowTimeline() {
+  return <section className="mx-auto max-w-6xl px-6 py-24 lg:px-8"><div className="rounded-3xl border border-teal-300/15 bg-gradient-to-br from-teal-300/10 to-blue-500/10 p-7 sm:p-12"><p className="text-sm font-medium text-teal-200">Escrow, made understandable</p><h2 className="mt-3 max-w-xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">Everyone knows what happens next.</h2><div className="mt-12 grid gap-4 sm:grid-cols-5">{events.map((event, index) => <div key={event} className="relative"><div className="flex size-8 items-center justify-center rounded-full border border-teal-200/30 bg-slate-950 text-sm text-teal-200">{index + 1}</div><div className="mt-4 h-px bg-teal-200/20 sm:absolute sm:left-8 sm:right-0 sm:top-4" /><p className="relative mt-3 text-sm leading-6 text-slate-200">{event}</p></div>)}</div></div></section>;
+}

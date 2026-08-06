@@ -20,3 +20,15 @@ test("Sprint 5.6 migration is additive and protects workflow history", async () 
   assert.match(sql, /evidence_items_id_current_revision_id_fkey/); assert.match(sql, /assessments_evidence_set_id_agreement_id_version_id_fkey/);
   assert.match(sql, /result_resource_type/); assert.match(sql, /result_resource_id/);
 });
+
+test("Sprint 5.7 migration is additive, simulated-only, and has no proposal-expiry default", async () => {
+  const sql = await readFile(new URL("../prisma/migrations/20260806230000_sprint_5_7_simulated_resolution/migration.sql", import.meta.url), "utf8");
+  assert.doesNotMatch(sql, /\bDROP\s+(TABLE|COLUMN|TYPE)\b/i);
+  assert.match(sql, /CREATE TYPE "ExecutionMode" AS ENUM \('simulated'\)/);
+  assert.match(sql, /one_active_resolution_outcome/);
+  assert.match(sql, /simulated_ledger_balance/);
+  assert.match(sql, /append_only/);
+  assert.match(sql, /"expires_at" TIMESTAMPTZ\(3\),/);
+  assert.doesNotMatch(sql, /"expires_at"[^,;]*DEFAULT/i);
+  assert.doesNotMatch(sql, /provider|custody|bank_account|payment_token/i);
+});

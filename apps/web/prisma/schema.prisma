@@ -94,6 +94,31 @@ enum HumanReviewState {
   superseded
 }
 
+enum ResolutionState {
+  proposed
+  review_window_open
+  disputed
+  held
+  authorized
+  execution_ready
+  simulated_executed
+  cancelled
+  expired
+}
+enum ResolutionProposalSource {
+  deterministic_assessment
+  human_reviewer
+}
+enum ExecutionMode {
+  simulated
+}
+enum FinancialSafetyState {
+  clear
+  review_required
+  held
+  restricted
+}
+
 model Account {
   id                 String                @id
   state              AccountState
@@ -112,6 +137,9 @@ model Account {
   reviewRequests     HumanReviewRequest[]  @relation("ReviewRequester")
   assignedReviews    HumanReviewRequest[]  @relation("ReviewAssignee")
   reviewerDecisions  ReviewerDecision[]
+  proposedResolutions ProposedResolution[] @relation("ResolutionCreator")
+  resolutionDisputes ResolutionDispute[] @relation("DisputeOpener")
+  resolutionGrants ResolutionAuthorizationGrant[] @relation("GrantActor")
 
   @@map("accounts")
 }
@@ -172,6 +200,8 @@ model Agreement {
   reviewRequests       HumanReviewRequest[]
   reviewerDecisions    ReviewerDecision[]
   evidenceEvents       EvidenceProvenanceEvent[]
+  proposedResolutions ProposedResolution[]
+  financialSafetyStatuses FinancialSafetyStatus[]
 
   @@unique([id, currentVersionId])
   @@index([updatedAt(sort: Desc), id])
@@ -205,6 +235,8 @@ model AgreementVersion {
   reviewRequests    HumanReviewRequest[]
   reviewerDecisions ReviewerDecision[]
   evidenceEvents    EvidenceProvenanceEvent[]
+  proposedResolutions ProposedResolution[]
+  financialSafetyStatuses FinancialSafetyStatus[]
 
   @@unique([agreementId, agreementVersion])
   @@unique([agreementId, id])
@@ -570,4 +602,208 @@ model AuditRecord {
   @@index([agreementId, occurredAt, id])
   @@index([correlationId])
   @@map("audit_records")
+}
+
+model ProposedResolution {
+  id String @id
+  agreementId String @map("agreement_id")
+  versionId String @map("version_id")
+  agreementDocumentDigest String @map("agreement_document_digest")
+  resolutionOutcomeId String @map("resolution_outcome_id")
+  consequenceRef String @map("consequence_ref")
+  evidenceSetId String @map("evidence_set_id")
+  assessmentId String @map("assessment_id")
+  reviewerDecisionId String? @map("reviewer_decision_id")
+  proposalSource ResolutionProposalSource @map("proposal_source")
+  simulatedEffect Json @map("simulated_effect") @db.JsonB
+  policySnapshot Json @map("policy_snapshot") @db.JsonB
+  reviewWindowSeconds Int @map("review_window_seconds")
+  proposedAt DateTime @map("proposed_at") @db.Timestamptz(3)
+  reviewWindowEndsAt DateTime @map("review_window_ends_at") @db.Timestamptz(3)
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(3)
+  state ResolutionState
+  revision Int @default(1)
+  createdByAccountId String @map("created_by_account_id")
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @map("updated_at") @db.Timestamptz(3)
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version AgreementVersion @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  creator Account @relation("ResolutionCreator", fields: [createdByAccountId], references: [id], onDelete: Restrict)
+  disputes ResolutionDispute[]
+  grants ResolutionAuthorizationGrant[]
+  execution SimulatedSettlementExecution?
+  safetyTransitions FinancialSafetyTransition[]
+  audits ResolutionAuditEvent[]
+  domainEvents ResolutionDomainEvent[]
+
+  @@unique([id, agreementId, versionId])
+  @@index([agreementId, versionId, state, createdAt(sort: Desc)])
+  @@index([reviewWindowEndsAt, state])
+  @@map("proposed_resolutions")
+}
+
+model ResolutionDispute {
+  id String @id
+  proposalId String @map("proposal_id")
+  agreementId String @map("agreement_id")
+  versionId String @map("version_id")
+  openedByPartyId String @map("opened_by_party_id")
+  openedByAccountId String @map("opened_by_account_id")
+  status String
+  reasonCode String @map("reason_code")
+  explanation String
+  reviewRequestId String? @map("review_request_id")
+  reviewerDecisionId String? @map("reviewer_decision_id")
+  rootDisputeId String @map("root_dispute_id")
+  appealOrdinal Int @map("appeal_ordinal")
+  revision Int @default(1)
+  openedAt DateTime @map("opened_at") @db.Timestamptz(3)
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(3)
+  proposal ProposedResolution @relation(fields: [proposalId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  opener Account @relation("DisputeOpener", fields: [openedByAccountId], references: [id], onDelete: Restrict)
+  @@unique([rootDisputeId, appealOrdinal])
+  @@index([proposalId, status])
+  @@map("resolution_disputes")
+}
+
+model ResolutionAuthorizationGrant {
+  id String @id
+  proposalId String @map("proposal_id")
+  agreementId String @map("agreement_id")
+  versionId String @map("version_id")
+  partyId String @map("party_id")
+  accountId String @map("account_id")
+  action String
+  consequenceRef String @map("consequence_ref")
+  sessionAssurance String @map("session_assurance")
+  grantedAt DateTime @map("granted_at") @db.Timestamptz(3)
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+  revision Int @default(1)
+  proposal ProposedResolution @relation(fields: [proposalId, agreementId, versionId], references: [id, agreementId, versionId], onDelete: Restrict)
+  actor Account @relation("GrantActor", fields: [accountId], references: [id], onDelete: Restrict)
+  @@unique([proposalId, action, partyId, consequenceRef])
+  @@index([proposalId, action, revokedAt])
+  @@map("resolution_authorization_grants")
+}
+
+model FinancialSafetyStatus {
+  agreementId String @map("agreement_id")
+  versionId String @map("version_id")
+  state FinancialSafetyState
+  revision Int @default(1)
+  updatedAt DateTime @map("updated_at") @db.Timestamptz(3)
+  agreement Agreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  version AgreementVersion @relation(fields: [agreementId, versionId], references: [agreementId, id], onDelete: Restrict)
+  transitions FinancialSafetyTransition[]
+  @@id([agreementId, versionId])
+  @@map("financial_safety_statuses")
+}
+
+model FinancialSafetyTransition {
+  id String @id
+  agreementId String @map("agreement_id")
+  versionId String @map("version_id")
+  proposalId String? @map("proposal_id")
+  fromState FinancialSafetyState @map("from_state")
+  toState FinancialSafetyState @map("to_state")
+  reasonCode String @map("reason_code")
+  actorAccountId String @map("actor_account_id")
+  authorityBasis String @map("authority_basis")
+  correlationId String @map("correlation_id")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  status FinancialSafetyStatus @relation(fields: [agreementId, versionId], references: [agreementId, versionId], onDelete: Restrict)
+  proposal ProposedResolution? @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  @@index([agreementId, versionId, occurredAt])
+  @@map("financial_safety_transitions")
+}
+
+model SimulatedSettlementExecution {
+  id String @id
+  proposalId String @unique @map("proposal_id")
+  consequenceExecutionKey String @unique @map("consequence_execution_key")
+  executionMode ExecutionMode @map("execution_mode")
+  executedByAccountId String @map("executed_by_account_id")
+  executedAt DateTime @map("executed_at") @db.Timestamptz(3)
+  correlationId String @map("correlation_id")
+  proposal ProposedResolution @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  intent SimulatedSettlementIntent?
+  ledgerTransaction SimulatedLedgerTransaction?
+  events SimulatedSettlementEvent[]
+  @@map("simulated_settlement_executions")
+}
+
+model SimulatedSettlementIntent {
+  id String @id
+  executionId String @unique @map("execution_id")
+  proposalId String @unique @map("proposal_id")
+  consequenceRef String @map("consequence_ref")
+  executionMode ExecutionMode @map("execution_mode")
+  effect Json @db.JsonB
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+  execution SimulatedSettlementExecution @relation(fields: [executionId], references: [id], onDelete: Restrict)
+  @@map("simulated_settlement_intents")
+}
+
+model SimulatedSettlementEvent {
+  id String @id
+  executionId String @map("execution_id")
+  eventType String @map("event_type")
+  executionMode ExecutionMode @map("execution_mode")
+  actorId String @map("actor_id")
+  correlationId String @map("correlation_id")
+  causationId String? @map("causation_id")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  execution SimulatedSettlementExecution @relation(fields: [executionId], references: [id], onDelete: Restrict)
+  @@index([executionId, occurredAt])
+  @@map("simulated_settlement_events")
+}
+
+model SimulatedLedgerTransaction {
+  id String @id
+  executionId String @unique @map("execution_id")
+  currency String
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+  execution SimulatedSettlementExecution @relation(fields: [executionId], references: [id], onDelete: Restrict)
+  entries SimulatedLedgerEntry[]
+  @@map("simulated_ledger_transactions")
+}
+
+model SimulatedLedgerEntry {
+  id String @id
+  transactionId String @map("transaction_id")
+  economicSideId String @map("economic_side_id")
+  amountMinor Int @map("amount_minor")
+  currency String
+  entryType String @map("entry_type")
+  transaction SimulatedLedgerTransaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  @@index([transactionId])
+  @@map("simulated_ledger_entries")
+}
+
+model ResolutionAuditEvent {
+  id String @id
+  proposalId String @map("proposal_id")
+  action String
+  actorId String @map("actor_id")
+  fromState ResolutionState? @map("from_state")
+  toState ResolutionState? @map("to_state")
+  reasonCodes Json @map("reason_codes") @db.JsonB
+  correlationId String @map("correlation_id")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  proposal ProposedResolution @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  @@index([proposalId, occurredAt])
+  @@map("resolution_audit_events")
+}
+
+model ResolutionDomainEvent {
+  id String @id
+  proposalId String @map("proposal_id")
+  eventType String @map("event_type")
+  payload Json @db.JsonB
+  correlationId String @map("correlation_id")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  proposal ProposedResolution @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  @@index([proposalId, occurredAt])
+  @@map("resolution_domain_events")
 }

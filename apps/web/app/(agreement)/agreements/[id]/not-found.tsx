@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+export default function AgreementNotFound(){return <div className="mx-auto max-w-xl rounded-xl border bg-white p-10 text-center"><p className="text-sm font-semibold text-teal-800">Agreement unavailable</p><h1 className="mt-2 text-3xl font-semibold">We can’t show this agreement</h1><p className="mt-3 text-slate-600">The link may be incorrect, the mock record may not exist, or access could be unavailable in a future authenticated version. No details were disclosed.</p><Button className="mt-6" render={<Link href="/agreements"/>}>Return to agreements</Button></div>}

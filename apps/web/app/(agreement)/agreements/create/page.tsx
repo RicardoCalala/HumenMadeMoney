@@ -1,0 +1,2 @@
+import { CreateAgreementForm } from "@/components/agreement/CreateAgreementForm";
+export default function CreateAgreementPage(){return <div className="mx-auto grid max-w-4xl gap-8"><header><p className="text-sm font-semibold text-teal-800">New draft</p><h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Create a clear agreement</h1><p className="mt-3 max-w-2xl text-slate-600">Document purpose, responsibilities, success conditions, evidence, optional protection, and a fair review path.</p></header><CreateAgreementForm/></div>}

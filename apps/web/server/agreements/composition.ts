@@ -3,8 +3,12 @@ import { creatorPartyByAccount } from "../auth/composition.ts";
 import { AgreementService } from "./application/service.ts";
 import { InMemoryAgreementRepository } from "./persistence/in-memory-repository.ts";
 
-const repository = new InMemoryAgreementRepository();
 const ids = (kind: "agreement" | "version" | "audit") => `${kind}-${crypto.randomUUID()}`;
+function createDevelopmentAgreements() {
+  const repository = new InMemoryAgreementRepository();
+  return { repository, agreementService: new AgreementService(repository, new MembershipAgreementAccessPolicy(repository, creatorPartyByAccount), () => new Date(), ids) };
+}
+const globalAgreements = globalThis as typeof globalThis & { __hmmDevelopmentAgreements?: ReturnType<typeof createDevelopmentAgreements> };
+const developmentAgreements = globalAgreements.__hmmDevelopmentAgreements ??= createDevelopmentAgreements();
 /** Development-only process-local composition. Data is disposable and does not coordinate across workers. */
-export const agreementService = new AgreementService(repository, new MembershipAgreementAccessPolicy(repository, creatorPartyByAccount), () => new Date(), ids);
-export { repository as agreementRepository };
+export const { repository: agreementRepository, agreementService } = developmentAgreements;

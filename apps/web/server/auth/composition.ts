@@ -5,11 +5,16 @@ export function assertAuthModeAllowed(environment: string | undefined, selectedM
 assertAuthModeAllowed(process.env.NODE_ENV, mode);
 const stamp = "2026-08-06T00:00:00.000Z";
 export const developmentProfiles = mode === "local_development" ? [{ profileId: "alex", displayName: "Alex (local profile)" }, { profileId: "jordan", displayName: "Jordan (local profile)" }] : [];
-export const accountRepository = new InMemoryAccountRepository([
-  { accountId: "account-alex", state: "active", displayName: "Alex", primaryEmail: "alex@local.invalid", createdAt: stamp, updatedAt: stamp },
-  { accountId: "account-jordan", state: "active", displayName: "Jordan", primaryEmail: "jordan@local.invalid", createdAt: stamp, updatedAt: stamp },
-], new Map([["alex", "account-alex"], ["jordan", "account-jordan"]]));
-export const sessionRepository = new InMemorySessionRepository();
-export const authenticationService = new AuthenticationService(accountRepository, sessionRepository);
+function createDevelopmentAuthentication() {
+  const accountRepository = new InMemoryAccountRepository([
+    { accountId: "account-alex", state: "active", displayName: "Alex", primaryEmail: "alex@local.invalid", createdAt: stamp, updatedAt: stamp },
+    { accountId: "account-jordan", state: "active", displayName: "Jordan", primaryEmail: "jordan@local.invalid", createdAt: stamp, updatedAt: stamp },
+  ], new Map([["alex", "account-alex"], ["jordan", "account-jordan"]]));
+  const sessionRepository = new InMemorySessionRepository();
+  return { accountRepository, sessionRepository, authenticationService: new AuthenticationService(accountRepository, sessionRepository) };
+}
+const globalAuthentication = globalThis as typeof globalThis & { __hmmDevelopmentAuthentication?: ReturnType<typeof createDevelopmentAuthentication> };
+const developmentAuthentication = globalAuthentication.__hmmDevelopmentAuthentication ??= createDevelopmentAuthentication();
+export const { accountRepository, sessionRepository, authenticationService } = developmentAuthentication;
 export const creatorPartyByAccount = new Map([["account-alex", "party-demo"], ["account-jordan", "party-jordan"]]);
 export const localAuthenticationEnabled = mode === "local_development";

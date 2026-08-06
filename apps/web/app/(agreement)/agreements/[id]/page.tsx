@@ -1,5 +1,17 @@
 import { notFound } from "next/navigation";
-import { AgreementDetail } from "@/components/agreement/AgreementDetail";
-import { getAgreementById, listAgreements } from "@/mocks/agreements";
-export async function generateStaticParams(){return (await listAgreements()).map(a=>({id:a.id}))}
-export default async function AgreementPage({params}:{params:Promise<{id:string}>}){const {id}=await params;const agreement=await getAgreementById(id);if(!agreement)notFound();return <div className="grid gap-8"><AgreementDetail agreement={agreement}/></div>}
+import { EvidenceWorkflow } from "@/components/agreement/EvidenceWorkflow";
+import { agreementService } from "@/server/agreements/composition";
+import { getCurrentUser } from "@/server/auth/current-user";
+
+export const dynamic = "force-dynamic";
+
+async function findAgreement(id: string, context: Awaited<ReturnType<typeof getCurrentUser>>["context"]) {
+  try { return await agreementService.get(context, id); } catch { notFound(); }
+}
+
+export default async function AgreementPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const current = await getCurrentUser();
+  const agreement = await findAgreement(id, current.context);
+  return <EvidenceWorkflow agreement={agreement} currentAccountId={current.user!.accountId} />;
+}

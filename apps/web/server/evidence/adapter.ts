@@ -1,13 +1,14 @@
 import type { AgreementLanguageDocument } from "../../lib/agreement-language/types.ts";
 import type { CriterionFinding, EvidenceRevision, EvidenceRequirementState } from "./domain.ts";
 
-export interface AssessmentAdapterInput { document: AgreementLanguageDocument; evidence: EvidenceRevision[]; requirementStates: Map<string, EvidenceRequirementState> }
+export interface AssessmentAdapterInput { document: AgreementLanguageDocument; documentDigest: string; evidenceSetId: string; evidenceSetDigest: string; evidenceCanonicalizationVersion: "evidence-set-v1"; evidence: EvidenceRevision[]; requirementStates: Map<string, EvidenceRequirementState> }
 export interface AssessmentDraft { findings: CriterionFinding[]; confidence: { level: "low" | "medium" | "high" | "not_assessed"; basis: string[]; limitations: string[] }; limitations: string[]; recommendedNextAction: "request_evidence" | "wait" | "request_human_review" | "participant_review" | "no_action" }
-export interface AssessmentAdapter { readonly kind: "deterministic" | "manual"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> }
+export interface AssessmentAdapter { readonly kind: "deterministic" | "manual" | "model"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> }
 export interface AdvisoryAssessmentProvider extends AssessmentAdapter { readonly providerKind: "deterministic_local" | "future_model"; readonly providerVersion: string }
 
 export class DeterministicAssessmentAdapter implements AdvisoryAssessmentProvider {
   readonly kind = "deterministic" as const; readonly version = "deterministic-v1"; readonly providerKind = "deterministic_local" as const; readonly providerVersion = "deterministic-local-v1";
+  supports(input: AssessmentAdapterInput) { return input.document.verificationPolicy.criterionIds.every((criterionId) => input.document.terms.successCriteria.find((criterion) => criterion.criterionId === criterionId)?.evaluationMode === "deterministic"); }
   async evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> {
     const findings = input.document.verificationPolicy.criterionIds.map((criterionId): CriterionFinding => {
       const requirements = input.document.evidencePolicy.evidenceRequirements.filter((r) => r.criterionIds.includes(criterionId)); const evidence = input.evidence.filter((r) => r.criterionIds.includes(criterionId));

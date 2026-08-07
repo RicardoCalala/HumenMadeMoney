@@ -24,7 +24,7 @@ export interface RequestContext {
   principal: { kind: "anonymous" } | { kind: "account"; accountId: string; sessionId: string; accountState: "active" | "suspended" | "disabled"; assurance: "development" };
   requestId: string;
   correlationId: string;
-  source: "api" | "server_page" | "test";
+  source: "api" | "server_page" | "test" | "mcp";
 }
 
 export interface AccessDecision { allowed: boolean; partyId?: PartyId; scopeId?: string }

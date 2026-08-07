@@ -4,9 +4,10 @@ import type { CriterionFinding, EvidenceRevision, EvidenceRequirementState } fro
 export interface AssessmentAdapterInput { document: AgreementLanguageDocument; evidence: EvidenceRevision[]; requirementStates: Map<string, EvidenceRequirementState> }
 export interface AssessmentDraft { findings: CriterionFinding[]; confidence: { level: "low" | "medium" | "high" | "not_assessed"; basis: string[]; limitations: string[] }; limitations: string[]; recommendedNextAction: "request_evidence" | "wait" | "request_human_review" | "participant_review" | "no_action" }
 export interface AssessmentAdapter { readonly kind: "deterministic" | "manual"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> }
+export interface AdvisoryAssessmentProvider extends AssessmentAdapter { readonly providerKind: "deterministic_local" | "future_model"; readonly providerVersion: string }
 
-export class DeterministicAssessmentAdapter implements AssessmentAdapter {
-  readonly kind = "deterministic" as const; readonly version = "deterministic-v1";
+export class DeterministicAssessmentAdapter implements AdvisoryAssessmentProvider {
+  readonly kind = "deterministic" as const; readonly version = "deterministic-v1"; readonly providerKind = "deterministic_local" as const; readonly providerVersion = "deterministic-local-v1";
   async evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> {
     const findings = input.document.verificationPolicy.criterionIds.map((criterionId): CriterionFinding => {
       const requirements = input.document.evidencePolicy.evidenceRequirements.filter((r) => r.criterionIds.includes(criterionId)); const evidence = input.evidence.filter((r) => r.criterionIds.includes(criterionId));

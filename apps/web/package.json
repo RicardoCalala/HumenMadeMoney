@@ -15,7 +15,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "node --experimental-strip-types prisma/seed.ts",
     "db:reset:test": "node --experimental-strip-types scripts/reset-test-database.ts",
-    "test:postgres": "node --test --experimental-strip-types tests/postgres/**/*.test.ts",
+    "test:postgres": "node --test --test-concurrency=1 --experimental-strip-types tests/postgres/**/*.test.ts",
     "mcp:stdio": "node --experimental-strip-types scripts/mcp-server.ts"
   },
   "dependencies": {

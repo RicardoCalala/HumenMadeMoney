@@ -5,7 +5,7 @@ import { InMemoryWorkflowRepository } from "../server/evidence/in-memory-reposit
 import { EvidenceAssessmentService } from "../server/evidence/service.ts";
 import { VerificationFacade } from "../server/mcp/facade.ts";
 import { TOOL_NAMES, ToolRegistry } from "../server/mcp/registry.ts";
-import { actorContext, InvocationGuard, issueActorToken } from "../server/mcp/security.ts";
+import { actorContext, InvocationGuard, issueActorToken, issueReceipt, verifyReceipt } from "../server/mcp/security.ts";
 import { LocalMcpServer } from "../server/mcp/server.ts";
 
 const stamp = "2026-08-06T18:00:00.000Z"; const epoch = Date.parse(stamp) / 1000; const secret = "local-test-secret-that-is-at-least-32-characters";
@@ -22,3 +22,49 @@ test("controlled fixture receipt drives an idempotent observation, deterministic
 test("malicious input, arbitrary URLs, receipt scope changes, adapter selection, prompt injection, and cross-scope review references fail safely", async () => { const { call } = harness(); const url = await call("hmm_retrieve_approved_source", { ...base, sourceConstraintId: "fixture-source", fixtureId: "https://example.test/private", fields: ["result"] }) as { error: { data: { code: string } } }; assert.equal(url.error.data.code, "SOURCE_NOT_ALLOWED"); const adapter = await call("hmm_request_assessment", { ...base, adapterKind: "manual", findings: [], idempotencyKey: "bad" }) as { error: { data: { code: string } } }; assert.equal(adapter.error.data.code, "INVALID_REQUEST"); const injected = await call("hmm_retrieve_approved_source", { ...base, sourceConstraintId: "fixture-source", fixtureId: "fixture.prompt.injection", fields: ["result", "note"] }) as { result: { structuredContent: { observation: Record<string, unknown>; capturedAt: string; retrievalReceiptId: string } } }; assert.match(String(injected.result.structuredContent.observation.note), /execute settlement/); const scoped = await call("hmm_submit_source_observation", { ...base, agreementId: "other-agreement", evidenceRequirementId: "requirement-1", criterionIds: ["criterion-1"], sourceConstraintId: "fixture-source", retrievalReceiptId: injected.result.structuredContent.retrievalReceiptId, metadata: injected.result.structuredContent.observation, capturedAt: injected.result.structuredContent.capturedAt, idempotencyKey: "bad-scope" }) as { error: { data: { code: string } } }; assert.equal(scoped.error.data.code, "RECEIPT_SCOPE_MISMATCH"); const review = await call("hmm_request_human_review", { ...base, assessmentId: "assessment-other", evidenceSetId: "set-other", reasonCodes: ["participant_challenge"], affectedCriterionIds: ["criterion-1"], idempotencyKey: "bad-review" }) as { error: { data: { code: string } } }; assert.equal(review.error.data.code, "RESOURCE_NOT_FOUND"); });
 
 test("privacy fails closed and request leases reject concurrent matching operations", async () => { const { call } = harness("sensitive"); const requirements = await call("hmm_get_evidence_requirements", base) as { result: { structuredContent: unknown[] } }; assert.deepEqual(requirements.result.structuredContent, []); const assessment = await call("hmm_request_assessment", { ...base, idempotencyKey: "private" }) as { error: { data: { code: string } } }; assert.equal(assessment.error.data.code, "PRIVACY_POLICY_UNENFORCEABLE"); const guard = new InvocationGuard(); const release = guard.enter("actor", "tool", epoch); assert.throws(() => guard.enter("actor", "tool", epoch), /already running/i); release(); assert.doesNotThrow(() => guard.enter("actor", "tool", epoch)()); });
+
+test("actor tokens fail closed across forgery, time, audience, purpose, and actor scope", async () => {
+  const { call, token } = harness();
+  const claims = (overrides: Record<string, unknown>) => issueActorToken({ accountId: "account-submit", sessionId: "session-submit", audience: "hmm-local-mcp", purpose: "verification", issuedAt: epoch - 10, expiresAt: epoch + 300, ...overrides } as Parameters<typeof issueActorToken>[0], secret);
+  for (const invalid of [
+    `${token.slice(0, -1)}${token.endsWith("a") ? "b" : "a"}`,
+    claims({ issuedAt: epoch + 1, expiresAt: epoch + 301 }),
+    claims({ audience: "other-audience" }),
+    claims({ purpose: "settlement" }),
+  ]) {
+    const response = await call("hmm_get_agreement_terms", base, invalid) as { error: { data: { code: string }; message: string } };
+    assert.equal(response.error.data.code, "AUTHENTICATION_REQUIRED");
+    assert.equal(response.error.message, "Local MCP authentication is required.");
+  }
+  const otherActor = claims({ accountId: "account-other" });
+  const response = await call("hmm_get_agreement_terms", base, otherActor) as { error: { data: { code: string } } };
+  assert.equal(response.error.data.code, "RESOURCE_NOT_FOUND");
+});
+
+test("receipts reject forgery, expiry, replay mismatch, cross-actor use, and exact scope changes", async () => {
+  const { call } = harness();
+  const retrieved = await call("hmm_retrieve_approved_source", { ...base, sourceConstraintId: "fixture-source", fixtureId: "fixture.result.true", fields: ["result", "note"] }) as { result: { structuredContent: { observation: object; capturedAt: string; retrievalReceiptId: string } } };
+  const source = retrieved.result.structuredContent;
+  const submission = { ...base, evidenceRequirementId: "requirement-1", criterionIds: ["criterion-1"], sourceConstraintId: "fixture-source", retrievalReceiptId: source.retrievalReceiptId, metadata: source.observation, capturedAt: source.capturedAt, idempotencyKey: "receipt-scope" };
+  const forged = { ...submission, retrievalReceiptId: `${source.retrievalReceiptId}x` };
+  assert.equal(((await call("hmm_submit_source_observation", forged)) as { error: { data: { code: string } } }).error.data.code, "RECEIPT_INVALID");
+  const otherActor = issueActorToken({ accountId: "account-other", sessionId: "session-other", audience: "hmm-local-mcp", purpose: "verification", issuedAt: epoch - 10, expiresAt: epoch + 300 }, secret);
+  assert.equal(((await call("hmm_submit_source_observation", submission, otherActor)) as { error: { data: { code: string } } }).error.data.code, "RECEIPT_SCOPE_MISMATCH");
+  assert.equal(((await call("hmm_submit_source_observation", { ...submission, criterionIds: ["criterion-other"] })) as { error: { data: { code: string } } }).error.data.code, "EVIDENCE_INVALID");
+  assert.equal(((await call("hmm_submit_source_observation", { ...submission, idempotencyKey: "receipt-scope", metadata: { result: false, note: "changed" } })) as { error: { data: { code: string } } }).error.data.code, "RECEIPT_SCOPE_MISMATCH");
+  await call("hmm_submit_source_observation", submission);
+  assert.equal(((await call("hmm_submit_source_observation", { ...submission, idempotencyKey: "receipt-reused" })) as { error: { data: { code: string } } }).error.data.code, "RECEIPT_REPLAYED");
+  const expired = issueReceipt({ receiptId: "receipt-expired", accountId: "account-submit", agreementId: base.agreementId, versionId: base.versionId, sourceConstraintId: "fixture-source", adapterVersion: "fixture-v1", fixtureId: "fixture.result.true", referenceDigest: "digest", fields: ["result"], capturedAt: stamp, digest: "digest", correlationId: "correlation", issuedAt: epoch - 400, expiresAt: epoch - 100 }, secret);
+  assert.throws(() => verifyReceipt(expired, secret, epoch), /invalid or expired/i);
+});
+
+test("resource bounds, exact references, and idempotency mismatches fail safely", async () => {
+  const { call } = harness();
+  assert.equal(((await call("hmm_list_evidence_metadata", { ...base, pageSize: 51 })) as { error: { data: { code: string } } }).error.data.code, "INVALID_REQUEST");
+  assert.equal(((await call("hmm_get_agreement_terms", { ...base, versionId: "version-other" })) as { error: { data: { code: string } } }).error.data.code, "RESOURCE_NOT_FOUND");
+  await call("hmm_request_assessment", { ...base, idempotencyKey: "same-key" });
+  assert.equal(((await call("hmm_request_assessment", { ...base, criterionIds: ["criterion-1"], idempotencyKey: "same-key" })) as { error: { data: { code: string } } }).error.data.code, "IDEMPOTENCY_KEY_REUSED");
+  const rate = harness();
+  for (let index = 0; index < 60; index += 1) await rate.call("hmm_get_agreement_terms", base);
+  assert.equal(((await rate.call("hmm_get_agreement_terms", base)) as { error: { data: { code: string } } }).error.data.code, "RESOURCE_LIMIT");
+});

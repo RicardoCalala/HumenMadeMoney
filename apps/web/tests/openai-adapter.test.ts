@@ -36,6 +36,9 @@ test("claim support accepts only exact values or formally equivalent RFC 3339 ti
 
   const changedInstant = structuredClone(reformatted); changedInstant.findings[0]!.claims[0]!.value = "2026-07-31T18:00:01Z";
   assert.throws(() => validateOpenAiDraft(changedInstant, timestampInput), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "CLAIM_SUPPORT");
+  const impossibleDateInput = structuredClone(timestampInput); impossibleDateInput.requirementStates = timestampInput.requirementStates; impossibleDateInput.evidence[0]!.metadata.deliveredAt = "2026-02-31T18:00:00Z";
+  const normalizedImpossibleDate = structuredClone(reformatted); normalizedImpossibleDate.findings[0]!.claims[0]!.value = "2026-03-03T18:00:00Z";
+  assert.throws(() => validateOpenAiDraft(normalizedImpossibleDate, impossibleDateInput), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "CLAIM_SUPPORT");
   const nonTimestamp = structuredClone(valid()) as unknown as { findings: Array<{ claims: Array<{ evidenceRevisionId: string; field: string; value: string | number | boolean | null }> }> }; nonTimestamp.findings[0]!.claims[0] = { evidenceRevisionId: "revision-1", field: "note", value: "SYNTHETIC" };
   assert.throws(() => validateOpenAiDraft(nonTimestamp, timestampInput), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "CLAIM_SUPPORT");
 });

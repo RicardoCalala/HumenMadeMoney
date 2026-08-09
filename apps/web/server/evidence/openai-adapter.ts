@@ -40,10 +40,17 @@ const strings = (value: unknown, maxItems: number, maxLength: number): value is 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 const canonical = (value: unknown) => JSON.stringify(value, (_key, item) => object(item) ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b))) : item);
 const RFC3339_TIMESTAMP_FIELD = /(?:At|Timestamp)$/;
-const RFC3339_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+const RFC3339_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-])(\d{2}):(\d{2}))$/;
+const validRfc3339Timestamp = (value: string) => {
+  const match = RFC3339_TIMESTAMP.exec(value); if (!match) return false;
+  const [, year, month, day, hour, minute, second, , offsetHour = "00", offsetMinute = "00"] = match;
+  const numeric = [year, month, day, hour, minute, second, offsetHour, offsetMinute].map(Number);
+  const [y, m, d, h, min, s, oh, om] = numeric;
+  return m! >= 1 && m! <= 12 && d! >= 1 && d! <= new Date(Date.UTC(y!, m!, 0)).getUTCDate() && h! <= 23 && min! <= 59 && s! <= 59 && oh! <= 23 && om! <= 59;
+};
 const equivalentClaimValue = (field: string, evidenceValue: unknown, claimValue: unknown) => {
   if (evidenceValue === claimValue) return true;
-  if (!RFC3339_TIMESTAMP_FIELD.test(field) || typeof evidenceValue !== "string" || typeof claimValue !== "string" || !RFC3339_TIMESTAMP.test(evidenceValue) || !RFC3339_TIMESTAMP.test(claimValue)) return false;
+  if (!RFC3339_TIMESTAMP_FIELD.test(field) || typeof evidenceValue !== "string" || typeof claimValue !== "string" || !validRfc3339Timestamp(evidenceValue) || !validRfc3339Timestamp(claimValue)) return false;
   const evidenceTime = Date.parse(evidenceValue); const claimTime = Date.parse(claimValue);
   return Number.isFinite(evidenceTime) && Number.isFinite(claimTime) && evidenceTime === claimTime;
 };

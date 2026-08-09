@@ -1,4 +1,5 @@
 node_modules/
+.hmm-smoke-authorizations/
 .env
 .env.local
 .next/

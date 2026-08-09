@@ -18,6 +18,7 @@
     "test:postgres": "node --test --test-concurrency=1 --experimental-strip-types tests/postgres/**/*.test.ts",
     "mcp:stdio": "node --experimental-strip-types scripts/mcp-server.ts",
     "ai:smoke:dry-run": "node --experimental-strip-types scripts/openai-smoke-dry-run.ts",
+    "ai:smoke:authorize": "node --experimental-strip-types scripts/openai-smoke-authorize.ts",
     "ai:smoke:preflight": "node --experimental-strip-types scripts/openai-smoke-preflight.ts",
     "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts"
   },

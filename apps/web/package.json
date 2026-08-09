@@ -16,7 +16,10 @@
     "db:seed": "node --experimental-strip-types prisma/seed.ts",
     "db:reset:test": "node --experimental-strip-types scripts/reset-test-database.ts",
     "test:postgres": "node --test --test-concurrency=1 --experimental-strip-types tests/postgres/**/*.test.ts",
-    "mcp:stdio": "node --experimental-strip-types scripts/mcp-server.ts"
+    "mcp:stdio": "node --experimental-strip-types scripts/mcp-server.ts",
+    "ai:smoke:dry-run": "node --experimental-strip-types scripts/openai-smoke-dry-run.ts",
+    "ai:smoke:preflight": "node --experimental-strip-types scripts/openai-smoke-preflight.ts",
+    "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

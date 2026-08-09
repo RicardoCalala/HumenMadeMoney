@@ -6,7 +6,7 @@ export interface AiProviderConfig {
   provider: "openai" | null;
   openAiEnabled: boolean;
   modelEnabled: boolean;
-  apiKey?: string;
+  apiKeyPresent: boolean;
   model?: string;
   modelAllowlist: readonly string[];
   promptVersion: string;
@@ -65,21 +65,22 @@ export function parseAiProviderConfig(env: NodeJS.ProcessEnv): AiProviderConfig 
   if (new Set(modelAllowlist).size !== modelAllowlist.length || modelAllowlist.some((item) => !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(item))) throw new AiConfigurationError("HMM_AI_OPENAI_MODEL_ALLOWLIST is invalid.");
   const model = env.HMM_AI_OPENAI_MODEL || undefined;
   if ((enabled || openAiEnabled || modelEnabled) && (provider !== "openai" || !enabled || !openAiEnabled || !modelEnabled)) throw new AiConfigurationError("AI provider flags are inconsistent.");
-  if (enabled && (!env.HMM_AI_OPENAI_API_KEY || !model || !modelAllowlist.includes(model))) throw new AiConfigurationError("Enabled OpenAI configuration requires an external key and allowlisted model.");
+  const apiKeyPresent = Boolean(env.HMM_AI_OPENAI_API_KEY);
+  if (enabled && (!apiKeyPresent || !model || !modelAllowlist.includes(model))) throw new AiConfigurationError("Enabled OpenAI configuration requires an external key and allowlisted model.");
   if (environment === "production" && enabled) throw new AiConfigurationError("OpenAI production enablement is not approved.");
   return {
-    environment, enabled, provider: provider as "openai" | null, openAiEnabled, modelEnabled, apiKey: env.HMM_AI_OPENAI_API_KEY, model, modelAllowlist,
+    environment, enabled, provider: provider as "openai" | null, openAiEnabled, modelEnabled, apiKeyPresent, model, modelAllowlist,
     promptVersion: version(env.HMM_AI_PROMPT_VERSION, "hmm-advisory-v1", "HMM_AI_PROMPT_VERSION"),
     schemaVersion: version(env.HMM_AI_SCHEMA_VERSION, "assessment-draft-v1", "HMM_AI_SCHEMA_VERSION"),
     policyVersion: version(env.HMM_AI_POLICY_VERSION, "ai-provider-policy-v1", "HMM_AI_POLICY_VERSION"),
-    timeoutMs: integer(env.HMM_AI_TIMEOUT_MS, 8_000, 100, 30_000, "HMM_AI_TIMEOUT_MS"),
-    maxAttempts: integer(env.HMM_AI_MAX_ATTEMPTS, 2, 1, 3, "HMM_AI_MAX_ATTEMPTS"),
-    maxConcurrent: integer(env.HMM_AI_MAX_CONCURRENT, 2, 1, 10, "HMM_AI_MAX_CONCURRENT"),
-    maxRequestsPerMinute: integer(env.HMM_AI_MAX_REQUESTS_PER_MINUTE, 10, 1, 60, "HMM_AI_MAX_REQUESTS_PER_MINUTE"),
-    maxInputTokens: integer(env.HMM_AI_MAX_INPUT_TOKENS, 8_000, 128, 32_000, "HMM_AI_MAX_INPUT_TOKENS"),
-    maxOutputTokens: integer(env.HMM_AI_MAX_OUTPUT_TOKENS, 2_000, 128, 8_000, "HMM_AI_MAX_OUTPUT_TOKENS"),
-    maxLatencyMs: integer(env.HMM_AI_MAX_LATENCY_MS, 10_000, 100, 30_000, "HMM_AI_MAX_LATENCY_MS"),
-    maxEstimatedCostMinor: integer(env.HMM_AI_MAX_ESTIMATED_COST_MINOR, 5, 0, 1_000, "HMM_AI_MAX_ESTIMATED_COST_MINOR"),
+    timeoutMs: integer(env.HMM_AI_TIMEOUT_MS, 15_000, 100, 30_000, "HMM_AI_TIMEOUT_MS"),
+    maxAttempts: integer(env.HMM_AI_MAX_ATTEMPTS, 1, 1, 3, "HMM_AI_MAX_ATTEMPTS"),
+    maxConcurrent: integer(env.HMM_AI_MAX_CONCURRENT, 1, 1, 10, "HMM_AI_MAX_CONCURRENT"),
+    maxRequestsPerMinute: integer(env.HMM_AI_MAX_REQUESTS_PER_MINUTE, 1, 1, 60, "HMM_AI_MAX_REQUESTS_PER_MINUTE"),
+    maxInputTokens: integer(env.HMM_AI_MAX_INPUT_TOKENS, 1_500, 128, 32_000, "HMM_AI_MAX_INPUT_TOKENS"),
+    maxOutputTokens: integer(env.HMM_AI_MAX_OUTPUT_TOKENS, 800, 128, 8_000, "HMM_AI_MAX_OUTPUT_TOKENS"),
+    maxLatencyMs: integer(env.HMM_AI_MAX_LATENCY_MS, 15_000, 100, 30_000, "HMM_AI_MAX_LATENCY_MS"),
+    maxEstimatedCostMinor: integer(env.HMM_AI_MAX_ESTIMATED_COST_MINOR, 1, 0, 1_000, "HMM_AI_MAX_ESTIMATED_COST_MINOR"),
     inputCostMinorPerMillion: integer(env.HMM_AI_INPUT_COST_MINOR_PER_MILLION, 100, 0, 100_000, "HMM_AI_INPUT_COST_MINOR_PER_MILLION"),
     outputCostMinorPerMillion: integer(env.HMM_AI_OUTPUT_COST_MINOR_PER_MILLION, 400, 0, 100_000, "HMM_AI_OUTPUT_COST_MINOR_PER_MILLION"),
     globalKillSwitch: bool(env.HMM_AI_KILL_SWITCH, false, "HMM_AI_KILL_SWITCH"),

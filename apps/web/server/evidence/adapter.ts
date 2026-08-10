@@ -2,7 +2,9 @@ import type { AgreementLanguageDocument } from "../../lib/agreement-language/typ
 import type { CriterionFinding, EvidenceRevision, EvidenceRequirementState } from "./domain.ts";
 
 export interface AssessmentAdapterInput { document: AgreementLanguageDocument; documentDigest: string; evidenceSetId: string; evidenceSetDigest: string; evidenceCanonicalizationVersion: "evidence-set-v1"; evidence: EvidenceRevision[]; requirementStates: Map<string, EvidenceRequirementState> }
-export interface AssessmentDraft { findings: CriterionFinding[]; confidence: { level: "low" | "medium" | "high" | "not_assessed"; basis: string[]; limitations: string[] }; limitations: string[]; recommendedNextAction: "request_evidence" | "wait" | "request_human_review" | "participant_review" | "no_action" }
+export const advisoryNextActions = ["request_evidence", "wait", "request_human_review", "participant_review", "no_action"] as const;
+export type AdvisoryNextAction = typeof advisoryNextActions[number];
+export interface AssessmentDraft { findings: CriterionFinding[]; confidence: { level: "low" | "medium" | "high" | "not_assessed"; basis: string[]; limitations: string[] }; limitations: string[]; recommendedNextAction: AdvisoryNextAction }
 export interface AssessmentAdapter { readonly kind: "deterministic" | "manual" | "model"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> }
 export interface AdvisoryAssessmentProvider extends AssessmentAdapter { readonly providerKind: "deterministic_local" | "future_model"; readonly providerVersion: string }
 

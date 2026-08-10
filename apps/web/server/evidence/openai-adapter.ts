@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import type { AssessmentAdapterInput, AssessmentDraft, AdvisoryAssessmentProvider } from "./adapter.ts";
+import { advisoryNextActions, type AssessmentAdapterInput, type AssessmentDraft, type AdvisoryAssessmentProvider } from "./adapter.ts";
 import { assertOpenAiEnabled, type AiProviderConfig } from "./ai-config.ts";
 import { evidenceSetDigest } from "./domain.ts";
 
@@ -31,9 +31,9 @@ export interface AiRunMetadata {
 type RawFinding = AssessmentDraft["findings"][number] & { claimReferenceIds: string[] };
 interface ClaimReference { claimReferenceId: string; criterionId: string; evidenceRevisionId: string; evidenceRequirementIds: string[]; field: string; value: string | number | boolean | null; provenance: { agreementId: string; versionId: string; documentDigest: string; evidenceSetId: string; evidenceSetDigest: string; evidenceCanonicalizationVersion: string; contentDigest: string | null } }
 const RESULTS = new Set(["satisfied", "not_satisfied", "indeterminate", "not_applicable"]);
-const NEXT = new Set(["request_evidence", "wait", "request_human_review", "participant_review", "no_action"]);
+const NEXT = new Set<string>(advisoryNextActions);
 const CONFIDENCE = new Set(["low", "medium", "high", "not_assessed"]);
-const AUTHORITY = /\b(authori[sz](?:e|ation)|release|refund|settle|settlement|financial safety|compliance clear|assign reviewer|reviewer decision|resolution|resolve dispute|record_resolution|move (?:money|funds|value))\b/i;
+const AUTHORITY = /\b(authori[sz](?:e|ation)|release|refund|settle|settlement|financial safety|compliance clear|assign reviewer|reviewer decision|resolution|resolve dispute|record_resolution|(?:move|movement of) (?:money|funds|value)|(?:money|funds|value) movement)\b/i;
 const INJECTION = /(?:ignore|override|disregard).{0,40}(?:instruction|system|policy)|(?:system|developer|assistant)\s*(?:message|prompt)|reveal.{0,30}(?:secret|prompt|credential)|(?:call|use|invoke).{0,20}(?:tool|mcp|shell|browser)|[\u202A-\u202E\u2066-\u2069]/i;
 const ACTIVE_MARKUP = /<\/?(?:script|iframe|object|embed|style)|\[[^\]]+\]\((?:https?:|javascript:|data:)/i;
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);

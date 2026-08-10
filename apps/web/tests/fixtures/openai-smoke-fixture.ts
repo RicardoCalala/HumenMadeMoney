@@ -1,10 +1,15 @@
 import type { AgreementLanguageDocument } from "../../lib/agreement-language/types.ts";
 import type { AssessmentAdapterInput } from "../../server/evidence/adapter.ts";
 import { buildClaimReferences } from "../../server/evidence/openai-adapter.ts";
+import type { ActionExpectation } from "../../server/evidence/action-semantics.ts";
 import { evidenceSetDigest } from "../../server/evidence/domain.ts";
 
 const stamp = "2026-08-01T00:00:00.000Z";
 export const smokeFixtureId = "hmm-smoke-fixture-v2";
+export const smokeActionExpectation: ActionExpectation = {
+  expectedAction: "participant_review",
+  acceptableActions: ["request_evidence", "wait", "request_human_review", "participant_review", "no_action"],
+};
 const document = {
   schemaVersion: "1.0", agreementId: "agr_smoke_001", agreementVersion: 1, versionId: "ver_smoke_001", versionState: "accepted",
   economicSides: [], purpose: { title: "Synthetic delivery", description: "Synthetic smoke-test agreement.", plainLanguageSummary: "Synthetic smoke-test agreement." }, parties: [],

@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { AgreementLanguageDocument } from "../lib/agreement-language/types.ts";
-import type { AssessmentAdapterInput } from "../server/evidence/adapter.ts";
+import { advisoryNextActions, type AssessmentAdapterInput } from "../server/evidence/adapter.ts";
+import { isAdvisoryNextAction, reportAdvisoryAction } from "../server/evidence/action-semantics.ts";
 import { AiConfigurationError, parseAiProviderConfig, type AiProviderConfig } from "../server/evidence/ai-config.ts";
 import { evaluateWithFailClosedFallback } from "../server/evidence/assessment-orchestrator.ts";
 import { buildClaimReferences, buildOpenAiRequest, OpenAiAssessmentAdapter, ProviderAssessmentError, validateOpenAiDraft, type OpenAiTransport } from "../server/evidence/openai-adapter.ts";
@@ -25,6 +26,41 @@ test("strict validation rejects malformed output, fabricated and misbound citati
   const fabricated = valid(); fabricated.findings[0]!.supportingEvidenceRevisionIds = ["revision-invented"]; assert.throws(() => validateOpenAiDraft(fabricated, input), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "CITATION");
   const unsupported = valid(); unsupported.findings[0]!.claimReferenceIds[0] = `claim_${"0".repeat(64)}`; assert.throws(() => validateOpenAiDraft(unsupported, input), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "CLAIM_SUPPORT");
   const escalation = valid(); escalation.findings[0]!.explanation = "Authorize settlement now."; assert.throws(() => validateOpenAiDraft(escalation, input), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "AUTHORITY_ESCALATION");
+});
+
+test("every allowed next action validates as advisory while unknown and consequential actions fail closed", () => {
+  for (const action of advisoryNextActions) {
+    assert.equal(isAdvisoryNextAction(action), true);
+    const output = valid(); output.recommendedNextAction = action;
+    assert.equal(validateOpenAiDraft(output, input).recommendedNextAction, action);
+  }
+  for (const action of ["record_resolution", "authorize_participant", "financial_safety_clear", "release", "refund", "settle", "move_funds", "unknown_action"]) {
+    assert.equal(isAdvisoryNextAction(action), false);
+    assert.throws(() => validateOpenAiDraft({ ...valid(), recommendedNextAction: action }, input), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "MALFORMED_OUTPUT");
+  }
+});
+
+test("action reporting separates authority safety from exact and acceptable fixture semantics", () => {
+  const expectation = { expectedAction: "participant_review" as const, acceptableActions: advisoryNextActions };
+  const exact = validateOpenAiDraft(valid(), input);
+  assert.deepEqual(reportAdvisoryAction(exact, expectation), { authoritySafe: true, semanticExpectationMatched: true, acceptableActionMatched: true, recommendedNextAction: "participant_review" });
+  const liveShape = valid(); liveShape.recommendedNextAction = "request_evidence";
+  const validated = validateOpenAiDraft(liveShape, input);
+  const boundedResult = { validated: true, ...reportAdvisoryAction(validated, expectation) };
+  assert.deepEqual(boundedResult, { validated: true, authoritySafe: true, semanticExpectationMatched: false, acceptableActionMatched: true, recommendedNextAction: "request_evidence" });
+  assert.equal("advisoryOnly" in boundedResult, false);
+  assert.throws(() => reportAdvisoryAction({ ...exact, recommendedNextAction: "settle" } as never, expectation), /unvalidated action/);
+});
+
+test("authority escalation language is rejected for every consequential boundary", () => {
+  for (const text of [
+    "Grant Financial Safety clearance.", "Assign reviewer authority.", "Make the reviewer decision.",
+    "Grant record_resolution.", "Give participant authorization.", "Approve resolution.",
+    "Release the funds.", "Issue a refund.", "Execute settlement.", "Begin funds movement.",
+  ]) {
+    const escalation = valid(); escalation.findings[0]!.explanation = text;
+    assert.throws(() => validateOpenAiDraft(escalation, input), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "AUTHORITY_ESCALATION");
+  }
 });
 
 test("claim references bind all JSON scalar types without provider value echoing or formatting", () => {

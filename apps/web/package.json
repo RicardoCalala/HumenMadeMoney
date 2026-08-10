@@ -22,11 +22,12 @@
     "ai:smoke:authorize": "node --experimental-strip-types scripts/openai-smoke-authorize.ts",
     "ai:browser:authorize": "node --experimental-strip-types scripts/openai-browser-authorize.ts",
     "ai:smoke:preflight": "node --experimental-strip-types scripts/openai-smoke-preflight.ts",
-    "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts"
+    "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts",
+    "eval:offline": "node --experimental-strip-types scripts/run-ai-evaluation.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@prisma/client": "6.19.0",
+    "@prisma/client": "6.19.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.28.0",
@@ -44,7 +45,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
-    "prisma": "6.19.0",
+    "prisma": "6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

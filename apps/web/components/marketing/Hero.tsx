@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function Hero() {
   return (
@@ -12,9 +13,7 @@ export function Hero() {
             <span className="grid size-8 place-items-center rounded-lg bg-teal-300 text-slate-950">H</span>
             Human Made Money
           </a>
-          <Button variant="outline" className="border-white/15 bg-white/5 text-white hover:bg-white/10" render={<a href="#pricing" />}>
-            View pricing
-          </Button>
+          <a className={buttonVariants({ variant: "outline", className: "border-white/15 bg-white/5 text-white hover:bg-white/10" })} href="#pricing">View pricing</a>
         </nav>
 
         <div className="mx-auto max-w-4xl pt-24 text-center sm:pt-32">
@@ -25,28 +24,24 @@ export function Hero() {
             Agreements that hold up in the real world.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-slate-300 sm:text-xl">
-            Human Made Money turns a shared promise into a clear, verifiable agreement—with AI guidance, shared evidence, and protected funds when needed.
+            Human Made Money turns a shared promise into a clear, verifiable agreement—with guided terms, shared evidence, and human review when needed. AI assessment and financial protection remain development capabilities, not generally available services.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="h-11 bg-teal-300 px-5 text-slate-950 hover:bg-teal-200" render={<a href="#pricing" />}>
-              Create an agreement <ArrowRight className="size-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="h-11 border-white/20 bg-white/5 px-5 text-white hover:bg-white/10" render={<a href="#how-it-works" />}>
-              See how it works
-            </Button>
+            <Link className={buttonVariants({ size: "lg", className: "min-h-11 bg-teal-300 px-5 text-slate-950 hover:bg-teal-200" })} href="/agreements/create">Create an agreement <ArrowRight className="size-4" /></Link>
+            <a className={buttonVariants({ size: "lg", variant: "outline", className: "min-h-11 border-white/20 bg-white/5 px-5 text-white hover:bg-white/10" })} href="#how-it-works">See how it works</a>
           </div>
           <div className="mt-12 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-slate-300">
-            <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-teal-300" /> Funds protected by clear rules</span>
+            <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-teal-300" /> Optional protection is simulated in development</span>
             <span className="flex items-center gap-2"><CheckCircle2 className="size-4 text-teal-300" /> Built for two-sided trust</span>
           </div>
         </div>
 
         <div className="mx-auto mt-16 max-w-4xl rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-2xl shadow-teal-950/30 backdrop-blur sm:p-6">
           <div className="rounded-xl border border-white/10 bg-slate-950 p-5 sm:p-7">
-            <div className="flex items-center justify-between text-xs text-slate-400"><span>Agreement overview</span><span className="rounded-full bg-teal-300/10 px-2 py-1 text-teal-200">Protected</span></div>
+            <div className="flex items-center justify-between text-xs text-slate-400"><span>Development preview</span><span className="rounded-full bg-teal-300/10 px-2 py-1 text-teal-200">Simulation only</span></div>
             <p className="mt-5 text-xl font-medium text-white">Website delivery — phase one</p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              {[['Funding', 'Confirmed'], ['Milestone', 'Review on delivery'], ['Release', 'Both sides approve']].map(([label, value]) => <div key={label} className="rounded-lg bg-white/5 p-3"><p className="text-xs text-slate-400">{label}</p><p className="mt-1 text-sm text-slate-100">{value}</p></div>)}
+              {[['Agreement', 'Accepted version'], ['Evidence', 'Review on delivery'], ['Protection', 'Simulated only']].map(([label, value]) => <div key={label} className="rounded-lg bg-white/5 p-3"><p className="text-xs text-slate-400">{label}</p><p className="mt-1 text-sm text-slate-100">{value}</p></div>)}
             </div>
           </div>
         </div>

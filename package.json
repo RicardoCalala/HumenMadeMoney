@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "build:production-shaped": "DATABASE_URL=postgresql://build:build@127.0.0.1:5432/hmm_build?schema=public HMM_PERSISTENCE_ADAPTER=prisma HMM_AI_PROVIDER_ENABLED=false HMM_AI_OPENAI_ENABLED=false HMM_AI_MODEL_ENABLED=false HMM_AI_KILL_SWITCH=true HMM_AI_OPENAI_KILL_SWITCH=true HMM_AI_MODEL_KILL_SWITCH=true HMM_AI_BUDGET_KILL_SWITCH=true turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "test": "turbo test",
+    "eval:offline": "pnpm --filter web eval:offline"
   },
   "packageManager": "pnpm@11.20.0",
   "engines": {

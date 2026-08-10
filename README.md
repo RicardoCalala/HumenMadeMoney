@@ -120,6 +120,8 @@ pnpm lint
 pnpm typecheck
 ```
 
+Use `pnpm build:production-shaped` for the repository-native production composition check. It explicitly selects Prisma, supplies a non-secret loopback-only build placeholder for schema composition, and forces every AI/provider gate and kill switch closed. The build does not connect to that placeholder; runtime Prisma composition still fails closed without approved configuration. This command does not authorize provider access or production enablement.
+
 Confirm that pnpm recognizes every workspace package with:
 
 ```sh

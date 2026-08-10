@@ -63,6 +63,9 @@ export HMM_AI_NON_SECRET_PROJECT_LABEL='<EXACT NON-SECRET PROJECT LABEL>'
 export HMM_AI_BROWSER_FIXTURE_ID=hmm-browser-assessment-fixture-v1
 export HMM_AI_BROWSER_AUTHORIZATION_RECORD=../../.hmm-product-assessment-authorizations/sprint-6.4.1-attempt.json
 
+docker compose up -d --wait postgres
+pnpm db:migrate
+pnpm db:seed
 pnpm ai:smoke:preflight -- --synthetic-only --browser-backed --ready-for-authorized-call
 mkdir -p ../../.hmm-product-assessment-authorizations
 pnpm ai:browser:authorize -- --synthetic-only \
@@ -76,6 +79,8 @@ stat -f '%Sp %N' "$HMM_AI_BROWSER_AUTHORIZATION_RECORD"
 git check-ignore "$HMM_AI_BROWSER_AUTHORIZATION_RECORD"
 pnpm --filter web dev
 ```
+
+The Prisma adapter fails closed if PostgreSQL is unavailable, and the Alex local profile exists only after the deterministic development seed runs. Do not skip the database startup, migration, or seed commands on a fresh or reset disposable environment. The seed is idempotent and contains only synthetic local/test data.
 
 The authorization file must report `-rw-------`, be ignored by Git, and remain `authorized`. Record its non-secret `configDigest`, `fixtureDigest`, `documentDigest`, and `evidenceSetDigest`. Do not open or paste the JSON. The server atomically creates a permanent `.consumed` marker before transport construction and finalizes the record as `completed` or `failed`; a crash still prevents reuse.
 

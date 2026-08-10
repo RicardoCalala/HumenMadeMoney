@@ -23,3 +23,5 @@ Implementation and offline validation do not authorize a provider call. The foun
 7. Start the development server in that same private environment and click **Request AI Assessment** once. Inspect persisted requested/resolved model provenance, exact document/evidence digests, citations, action semantics, `authoritySafe`, confidence, uncertainty, and limitations. Immediately disable the three enable flags or engage the kill switch after the single call.
 
 Any changed model, configuration bundle, fixture, evidence digest, or second call requires a separate fresh authorization. Production and non-synthetic/customer/private/sensitive data remain prohibited.
+
+The exact browser-backed procedure and server-consumed one-time record are documented in `docs/runbooks/sprint-6.4.1-browser-backed-openai-assessment.md`.

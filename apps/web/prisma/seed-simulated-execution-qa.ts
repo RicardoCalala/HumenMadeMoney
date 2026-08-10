@@ -3,7 +3,10 @@ import { Prisma, type PrismaClient } from "@prisma/client";
 import type { AgreementLanguageDocument } from "../lib/agreement-language/types.ts";
 
 export const SIMULATED_EXECUTION_QA_AGREEMENT_ID = "agreement-simulated-execution-qa";
-const versionId = "version-simulated-execution-qa-v1";
+export const SIMULATED_EXECUTION_QA_VERSION_ID = "version-simulated-execution-qa-v1";
+export const SIMULATED_EXECUTION_QA_EVIDENCE_REVISION_ID = "evidence-revision-simulated-qa";
+export const SIMULATED_EXECUTION_QA_EVIDENCE_SET_DIGEST = "94f9f4c3f6cc8a8fc1ce482edce40fe5e19b36b8f2020d08a106a4485b0f0717";
+const versionId = SIMULATED_EXECUTION_QA_VERSION_ID;
 const stamp = new Date("2026-08-06T00:00:00.000Z");
 const json = (value: unknown) => value as Prisma.InputJsonValue;
 
@@ -54,7 +57,11 @@ const document: AgreementLanguageDocument = {
 };
 
 export async function seedSimulatedExecutionQaAgreement(prisma: PrismaClient) {
-  if (await prisma.agreement.findUnique({ where: { id: SIMULATED_EXECUTION_QA_AGREEMENT_ID }, select: { id: true } })) return;
+  const existing = await prisma.agreement.findUnique({ where: { id: SIMULATED_EXECUTION_QA_AGREEMENT_ID }, select: { currentVersionId: true, lifecycleState: true, currentVersion: { select: { versionState: true } } } });
+  if (existing) {
+    if (existing.currentVersionId !== versionId || existing.lifecycleState !== "accepted" || existing.currentVersion.versionState !== "accepted") throw new Error("The existing synthetic QA fixture is incomplete or does not have the exact accepted Sprint 6.4.3 version.");
+    return;
+  }
   const documentDigest = createHash("sha256").update(`hmm:agreement-document:${JSON.stringify(document)}`).digest("base64url");
   await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`INSERT INTO "agreements" ("id", "current_version_id", "lifecycle_state", "created_at", "updated_at", "created_by_actor_id", "last_changed_by_actor_id", "correlation_id", "source", "revision") VALUES (${SIMULATED_EXECUTION_QA_AGREEMENT_ID}, ${versionId}, 'accepted'::"AgreementLifecycleState", ${stamp}, ${stamp}, 'account-alex', 'account-alex', 'seed-simulated-execution-qa', 'development_seed', 0)`;
@@ -69,9 +76,9 @@ export async function seedSimulatedExecutionQaAgreement(prisma: PrismaClient) {
       { id: "acceptance-simulated-qa-jordan", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, partyId: "qa-party-jordan", acceptedAt: stamp, consentContext: "synthetic_local_test_fixture", assuranceContext: "development_profile", accountId: "account-jordan", recordedAt: stamp, correlationId: "seed-simulated-execution-qa" },
     ] });
     await tx.evidenceItem.create({ data: { id: "evidence-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, evidenceRequirementId: "qa-evidence-requirement", lifecycle: "active", createdAt: stamp, createdByAccountId: "account-jordan", revision: 1 } });
-    await tx.evidenceRevision.create({ data: { id: "evidence-revision-simulated-qa", evidenceId: "evidence-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, revisionNumber: 1, criterionIds: ["qa-criterion"], evidenceClass: "system_event", origin: "system", submittedByPartyId: "qa-party-jordan", submittedByAccountId: "account-jordan", sourceConstraintId: "qa-fixture-source", sourceRefKind: "fixture", sourceRef: "synthetic-simulated-qa-complete", sourceDisplayLabel: "Synthetic local/test completion record", capturedAt: stamp, receivedAt: stamp, availability: "available", integrity: "verified", validation: "valid", validationReasons: [], metadata: { result: true, simulation: true, disclaimer: "No real funds or work" }, contentDigest: "synthetic-fixture-no-external-content" } });
-    await tx.evidenceItem.update({ where: { id: "evidence-simulated-qa" }, data: { currentRevisionId: "evidence-revision-simulated-qa" } });
-    await tx.evidenceSet.create({ data: { id: "evidence-set-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, canonicalizationVersion: "1", digest: "synthetic-simulated-execution-qa-evidence-set", createdAt: stamp, createdByAccountId: "account-alex", members: { create: [{ evidenceRevisionId: "evidence-revision-simulated-qa", ordinal: 0 }] } } });
+    await tx.evidenceRevision.create({ data: { id: SIMULATED_EXECUTION_QA_EVIDENCE_REVISION_ID, evidenceId: "evidence-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, revisionNumber: 1, criterionIds: ["qa-criterion"], evidenceClass: "system_event", origin: "system", submittedByPartyId: "qa-party-jordan", submittedByAccountId: "account-jordan", sourceConstraintId: "qa-fixture-source", sourceRefKind: "fixture", sourceRef: "synthetic-simulated-qa-complete", sourceDisplayLabel: "Synthetic local/test completion record", capturedAt: stamp, receivedAt: stamp, availability: "available", integrity: "verified", validation: "valid", validationReasons: [], metadata: { result: true, simulation: true, disclaimer: "No real funds or work" }, contentDigest: "synthetic-fixture-no-external-content" } });
+    await tx.evidenceItem.update({ where: { id: "evidence-simulated-qa" }, data: { currentRevisionId: SIMULATED_EXECUTION_QA_EVIDENCE_REVISION_ID } });
+    await tx.evidenceSet.create({ data: { id: "evidence-set-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, canonicalizationVersion: "evidence-set-v1", digest: SIMULATED_EXECUTION_QA_EVIDENCE_SET_DIGEST, createdAt: stamp, createdByAccountId: "account-alex", members: { create: [{ evidenceRevisionId: SIMULATED_EXECUTION_QA_EVIDENCE_REVISION_ID, ordinal: 0 }] } } });
     await tx.assessment.create({ data: { id: "assessment-simulated-qa", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, evidenceSetId: "evidence-set-simulated-qa", adapterKind: "deterministic", adapterVersion: "sprint-5.7.1-qa", policyVersion: "sprint-5.7.1-qa", status: "completed", confidence: { level: "high", basis: ["Deterministic synthetic fixture"], limitations: ["Local/test scenario only; not proof of real-world performance"] }, limitations: ["Advisory assessment only; grants no authority and moves no funds"], recommendedNextAction: "participant_review", occurredAt: stamp, revision: 1, findings: { create: [{ criterionId: "qa-criterion", result: "satisfied", evidenceRequirementIds: ["qa-evidence-requirement"], explanation: "The deterministic synthetic fixture marks the QA criterion satisfied.", limitations: ["Synthetic local/test evidence only"], supporting: { create: [{ evidenceRevisionId: "evidence-revision-simulated-qa" }] } }] } } });
     await tx.financialSafetyStatus.create({ data: { agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, state: "clear", revision: 1, updatedAt: stamp } });
     await tx.auditRecord.create({ data: { id: "audit-simulated-execution-qa-seeded", agreementId: SIMULATED_EXECUTION_QA_AGREEMENT_ID, versionId, actorType: "system", actorId: "local-test-seed", action: "qa.synthetic_fixture.seeded", occurredAt: stamp, recordedAt: stamp, correlationId: "seed-simulated-execution-qa", sourceSystem: "development-seed", policyVersion: "sprint-5.7.1-qa", relatedObjectIds: [versionId, "evidence-set-simulated-qa", "assessment-simulated-qa"], explanation: "Created a deterministic synthetic simulated-execution QA fixture. No real funds, custody, provider, or payment rail exists." } });

@@ -31,7 +31,7 @@ Any mismatch is a STOP. Re-run credential-free preparation and review the change
 
 ## Same private terminal: load, prepare, inspect, then authorize the record
 
-Use a new private zsh terminal that is not recorded, starting in `apps/web`. The founder supplies a fresh isolated, non-production, project-scoped key. The hidden read is the first founder action; it does not echo the key, put it on a command line, or write it to a file. Replace only the non-secret project label and short expiry.
+Use a new private zsh terminal that is not recorded, starting in `apps/web`. Use the repository scripts below exactly: Prisma CLI seed discovery is intentionally not configured, so `pnpm prisma db seed` does not seed this fixture. The founder supplies a fresh isolated, non-production, project-scoped key. The hidden read is the first founder action; it does not echo the key, put it on a command line, or write it to a file. Replace only the non-secret project label and short expiry.
 
 ```sh
 unset HISTFILE
@@ -68,6 +68,7 @@ export HMM_AI_BROWSER_AUTHORIZATION_RECORD=../../.hmm-product-assessment-authori
 docker compose up -d --wait postgres
 pnpm db:migrate
 pnpm db:seed
+pnpm db:seed:verify
 pnpm ai:smoke:preflight -- --synthetic-only --browser-backed --ready-for-authorized-call
 mkdir -p ../../.hmm-product-assessment-authorizations
 pnpm ai:browser:authorize -- --synthetic-only --inspect-only \
@@ -77,6 +78,8 @@ pnpm ai:browser:authorize -- --synthetic-only --inspect-only \
   --agreement-id agreement-simulated-execution-qa \
   --version-id version-simulated-execution-qa-v1
 ```
+
+The seed verifier must report the exact agreement/version, two required acceptances, only `evidence-revision-simulated-qa`, document digest `f26350692fd589e6fae693a161278d7708c778f93b64a54a1aba20355b7720cf`, and evidence-set digest `94f9f4c3f6cc8a8fc1ce482edce40fe5e19b36b8f2020d08a106a4485b0f0717`. It performs no provider operation and does not read an API key.
 
 Confirm the four inspection digests exactly match the frozen values above and preflight reports zero requests. Then, and only after the founder gives a fresh authorization specifically to create the short-lived local one-time record for this reviewed envelope, create it:
 

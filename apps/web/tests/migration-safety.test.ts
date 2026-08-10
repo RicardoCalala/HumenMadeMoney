@@ -41,3 +41,9 @@ test("Sprint 6.3 migration is additive and bounds durable assessment provenance"
   assert.match(sql, /assessment_evaluation_envelope_unique/);
   assert.doesNotMatch(sql, /api_key|authorization_header|raw_prompt|raw_response|chain_of_thought/i);
 });
+
+test("Sprint 6.4 migration additively preserves requested and resolved model provenance", async () => {
+  const sql = await readFile(new URL("../prisma/migrations/20260810010000_sprint_6_4_openai_product/migration.sql", import.meta.url), "utf8");
+  assert.match(sql, /ADD COLUMN "requested_model_version" TEXT/); assert.match(sql, /ADD COLUMN "resolved_model_version" TEXT/);
+  assert.doesNotMatch(sql, /DROP|DELETE|TRUNCATE|ALTER COLUMN/i);
+});

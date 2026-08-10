@@ -460,6 +460,8 @@ model Assessment {
   providerClass          String?                      @map("provider_class")
   providerName           String?                      @map("provider_name")
   modelVersion           String?                      @map("model_version")
+  requestedModelVersion  String?                      @map("requested_model_version")
+  resolvedModelVersion   String?                      @map("resolved_model_version")
   promptVersion          String?                      @map("prompt_version")
   schemaVersion          String?                      @map("schema_version")
   claimReferenceContractVersion String?               @map("claim_reference_contract_version")

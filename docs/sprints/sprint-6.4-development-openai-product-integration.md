@@ -24,4 +24,4 @@ Implementation and offline validation do not authorize a provider call. The foun
 
 Any changed model, configuration bundle, fixture, evidence digest, or second call requires a separate fresh authorization. Production and non-synthetic/customer/private/sensitive data remain prohibited.
 
-The exact browser-backed procedure and server-consumed one-time record are documented in `docs/runbooks/sprint-6.4.1-browser-backed-openai-assessment.md`.
+The original browser-backed procedure is documented in `docs/runbooks/sprint-6.4.1-browser-backed-openai-assessment.md`. The final post-hardening provenance verification is documented in `docs/runbooks/sprint-6.4.3-final-provenance-verification.md`.

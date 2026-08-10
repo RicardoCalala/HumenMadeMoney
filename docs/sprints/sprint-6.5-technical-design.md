@@ -55,9 +55,9 @@ apps/web/tests/fixtures/ai-evaluation/
   schemas/
 ```
 
-The manifest pins `datasetVersion`, case IDs, scenario tags, agreement/evidence fixture versions, document and evidence-set digests, expected-output schema version, prompt/policy/action/claim-reference/canonicalization versions, and the evaluator implementation version. Each case is self-contained, synthetic, deterministic under a fixed clock, and small enough for line-by-line review. Expected files contain allowed result sets and invariants rather than brittle prose matches.
+The manifest pins `datasetVersion`, case IDs, scenario tags, agreement/evidence fixture versions, document and evidence-set digests, expected-output schema version, prompt/policy/action/claim-reference/canonicalization versions, evaluator implementation version, and the release-gate profile. The gate profile pins the gating partitions and minimum case count per partition, repetition/sample count for operational metrics, benchmark-environment classification, token estimator, cost currency and minor-unit scale, and price-fixture version. A partition below its pinned minimum is informative and cannot produce a release pass. Each case is self-contained, synthetic, deterministic under a fixed clock, and small enough for line-by-line review. Expected files contain allowed result sets and invariants rather than brittle prose matches.
 
-Dataset changes require an explicit version bump and review of changed expectations. Reports identify the exact Git commit, dataset/configuration digests, adapter and model labels, evaluator version, and comparison baseline. Historical reports do not rewrite when fixtures or thresholds change.
+Dataset changes require an explicit version bump and review of changed expectations. Threshold, partition, sample-count, estimator, price, or benchmark-environment changes require a gate-profile version bump. Reports identify the exact Git commit, dataset/configuration/gate-profile digests, adapter and model labels, evaluator version, and comparison baseline. Historical reports do not rewrite when fixtures or thresholds change.
 
 ### 4.2 Dataset partitions
 
@@ -157,11 +157,11 @@ On the versioned release-gating dataset:
 - required human/participant-review recall: 100%; escalation precision: at least 90%; and
 - provenance completeness and privacy/redaction: 100%.
 
-A candidate also fails when any gating metric drops more than 1 percentage point from the last approved baseline, even if it remains above the absolute floor. For metrics with a 100% floor, any regression fails. A baseline change requires a dataset/configuration version bump and an explicit reviewed explanation; updating expected answers to make a regression pass is prohibited.
+A candidate also fails when any gating metric drops more than 1 percentage point from the last approved baseline, even if it remains above the absolute floor. For metrics with a 100% floor, any regression fails. A baseline change requires the applicable dataset, configuration, or gate-profile version bump and an explicit reviewed explanation; updating expected answers, partitions, or sample counts merely to make a regression pass is prohibited. Reports must show raw counts alongside percentages so a small dataset cannot conceal the practical size of a regression.
 
 ## 8. Latency, token, and cost budgets
 
-Offline runs measure validator/orchestrator latency separately from simulated provider latency. Use warm and cold samples, report p50/p95/p99, and compare on the same supported environment.
+Offline runs measure validator/orchestrator latency separately from simulated provider latency. Use the gate profile's pinned warm and cold sample counts, report p50/p95/p99, record the runtime/OS/architecture and resource class, and compare only on the same supported benchmark-environment classification. Functional safety gates still apply on every environment; an unrecognized or materially contended environment reports performance as informative and cannot establish a new passing latency baseline.
 
 Initial development gates per assessment are:
 
@@ -170,7 +170,7 @@ Initial development gates per assessment are:
 - total simulated end-to-end latency under the Sprint 6.4 ceiling of 15 seconds, with timeout/late-result rejection proven;
 - estimated input no more than 1,500 tokens and output no more than 800 tokens;
 - one attempt, one request-equivalent, maximum concurrency 1, and no automatic retry;
-- estimated per-assessment cost no more than 1 minor unit using the pinned price fixture; and
+- estimated per-assessment cost no more than 1 minor unit in the gate profile's pinned currency and minor-unit scale, using its versioned price fixture; and
 - `networkRequests` exactly zero for every Sprint 6.5 run.
 
 The runner fails a case before provider simulation when its estimated tokens or cost exceed the configured ceiling. Price fixtures are versioned and labelled estimates; they do not imply current provider pricing. Any future live-provider budget, aggregate daily/project budget, or user-facing cost display remains a founder decision.
@@ -252,6 +252,8 @@ The first implementation should produce static local artifacts, not a hosted das
 - owner, review timestamp, and documented waiver status.
 
 A future internal dashboard may ingest only redacted aggregates and bounded case identifiers. It requires access control, retention/deletion policy, audit logging, alert ownership, and a threat model before implementation. It must not become a store for raw evidence, prompts, responses, secrets, or authorization records.
+
+Waivers cannot convert a hard-gate failure, invalid/incomplete evaluation run, privacy or authority violation, credential/network event, provenance failure, or below-minimum gating partition into a pass. A temporary waiver for a non-safety development metric requires a named owner, bounded rationale and scope, compensating control, expiry, linked remediation, and founder plus relevant security/privacy/operations approval. Reports preserve the original failed result and display the waiver separately; a waiver never authorizes a provider call, broader data class, deployment, or production enablement.
 
 ## 15. Release gates
 

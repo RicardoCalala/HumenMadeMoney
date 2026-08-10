@@ -187,7 +187,7 @@ Citation validation has three independent layers:
 
 1. **Membership:** every citation exists in the frozen evidence set.
 2. **Binding:** the cited revision is authorized and bound to the finding's criterion and evidence requirement.
-3. **Claim support:** every material factual statement in the explanation is supported by allowlisted structured fields from cited revisions; unsupported embellishment, source ranking, causality, identity, timing, or certainty invalidates the output.
+3. **Claim support:** every material factual statement in the explanation names only deterministic HMM-issued `claimReferenceId` values. HMM independently resolves each reference to an allowlisted canonical structured field from a cited revision; the model never echoes the canonical value. Unsupported embellishment, source ranking, causality, identity, timing, or certainty invalidates the output. Sprint 6.2.3 details the scoped reference construction and validation contract.
 
 Every `satisfied` or `not_satisfied` finding requires valid support and must surface all material conflicts included in the projection. `Indeterminate` describes relevant missing, stale, inaccessible, invalid, insufficient, conflicting, or independence-unproven evidence and cites what is available. `Not applicable` is accepted only when the exact policy permits it. The validator, not the model, computes citation membership and known conflict/missing-evidence conditions.
 

@@ -1,10 +1,12 @@
 # Sprint 6.2.1 OpenAI smoke-test runbook
 
-This is a development-only, synthetic-only, one-call procedure. Preparation and preflight do not authorize a provider request. The provider remains disabled until the founder gives the exact fresh authorization required by the Sprint plan. A chat statement records human intent, but the live harness accepts only a matching local one-time authorization record.
+This is a development-only, synthetic-only, one-call procedure. Sprint 6.2.3 uses `hmm-smoke-fixture-v2`, `hmm-advisory-v2`, and `assessment-draft-v2`: model output contains only HMM-issued `claimReferenceIds`, and HMM resolves canonical values from the frozen evidence set. Preparation and preflight do not authorize a provider request. The provider remains disabled until the founder gives the exact fresh authorization required by the Sprint plan. A chat statement records human intent, but the live harness accepts only a matching local one-time authorization record.
 
 ## Offline preparation
 
-From `apps/web`, run `pnpm ai:smoke:dry-run`. It uses an in-memory fake transport, validates request construction, strict output, citation and claim support, advisory authority boundaries, budgets, and every kill switch, and reports `networkRequests: 0`.
+From `apps/web`, run `pnpm ai:smoke:dry-run`. It uses an in-memory fake transport, validates request construction, strict output, frozen-set citation and claim-reference support, canonical server-side resolution, advisory authority boundaries, budgets, and every kill switch, and reports `networkRequests: 0`.
+
+Any authorization record created for fixture v1 or the v1 prompt/schema bundle is intentionally invalid for v2 because its configuration or fixture digest cannot match. Do not edit, replay, or replace an old record. A new record requires a new explicit live-call authorization; Sprint 6.2.3 itself creates none.
 
 Run the disabled preflight with the selected approved model and exact reviewed prices in the server process environment. Do not set the key and keep `HMM_AI_PROVIDER_ENABLED`, `HMM_AI_OPENAI_ENABLED`, and `HMM_AI_MODEL_ENABLED` false. Set `NODE_ENV=development`, the provider/model/sole allowlist, pinned versions, all four kill switches, and the limits from the Sprint plan, then run:
 

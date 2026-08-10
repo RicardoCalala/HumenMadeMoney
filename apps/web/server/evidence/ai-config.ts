@@ -70,8 +70,8 @@ export function parseAiProviderConfig(env: NodeJS.ProcessEnv): AiProviderConfig 
   if (environment === "production" && enabled) throw new AiConfigurationError("OpenAI production enablement is not approved.");
   return {
     environment, enabled, provider: provider as "openai" | null, openAiEnabled, modelEnabled, apiKeyPresent, model, modelAllowlist,
-    promptVersion: version(env.HMM_AI_PROMPT_VERSION, "hmm-advisory-v1", "HMM_AI_PROMPT_VERSION"),
-    schemaVersion: version(env.HMM_AI_SCHEMA_VERSION, "assessment-draft-v1", "HMM_AI_SCHEMA_VERSION"),
+    promptVersion: version(env.HMM_AI_PROMPT_VERSION, "hmm-advisory-v2", "HMM_AI_PROMPT_VERSION"),
+    schemaVersion: version(env.HMM_AI_SCHEMA_VERSION, "assessment-draft-v2", "HMM_AI_SCHEMA_VERSION"),
     policyVersion: version(env.HMM_AI_POLICY_VERSION, "ai-provider-policy-v1", "HMM_AI_POLICY_VERSION"),
     timeoutMs: integer(env.HMM_AI_TIMEOUT_MS, 15_000, 100, 30_000, "HMM_AI_TIMEOUT_MS"),
     maxAttempts: integer(env.HMM_AI_MAX_ATTEMPTS, 1, 1, 3, "HMM_AI_MAX_ATTEMPTS"),

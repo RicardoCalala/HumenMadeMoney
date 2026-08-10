@@ -17,4 +17,4 @@ for (const change of [{ globalKillSwitch: true }, { environmentKillSwitch: true 
   await assert.rejects(() => new OpenAiAssessmentAdapter(blocked, { ...config, ...change }).evaluate(smokeInput), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "KILL_SWITCH");
 }
 await assert.rejects(() => new OpenAiAssessmentAdapter(fake, { ...config, maxEstimatedCostMinor: 0 }).evaluate(smokeInput), (error: unknown) => error instanceof ProviderAssessmentError && error.code === "BUDGET");
-console.log(JSON.stringify({ fixture: smokeFixtureId, mode: "offline-fake-transport", networkRequests: 0, requestConstruction: "pass", schema: "pass", citationsAndClaims: "pass", advisoryAuthority: "pass", budgets: "pass", killSwitches: "pass" }));
+console.log(JSON.stringify({ fixture: smokeFixtureId, mode: "offline-fake-transport", networkRequests: 0, requestConstruction: "pass", schema: "pass", frozenEvidenceSet: "pass", claimReferencesAndCanonicalResolution: "pass", advisoryAuthority: "pass", budgets: "pass", killSwitches: "pass" }));

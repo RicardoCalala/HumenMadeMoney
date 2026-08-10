@@ -5,7 +5,13 @@ export interface AssessmentAdapterInput { document: AgreementLanguageDocument; d
 export const advisoryNextActions = ["request_evidence", "wait", "request_human_review", "participant_review", "no_action"] as const;
 export type AdvisoryNextAction = typeof advisoryNextActions[number];
 export interface AssessmentDraft { findings: CriterionFinding[]; confidence: { level: "low" | "medium" | "high" | "not_assessed"; basis: string[]; limitations: string[] }; limitations: string[]; recommendedNextAction: AdvisoryNextAction }
-export interface AssessmentAdapter { readonly kind: "deterministic" | "manual" | "model"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft> }
+export interface AssessmentRunProvenance {
+  providerName: "openai"; providerClass: "development_model"; adapterVersion: string;
+  requestedModelVersion: string; resolvedModelVersion?: string; modelVersion?: string;
+  promptVersion: string; schemaVersion: string; policyVersion: string; configurationDigest?: string;
+  authorizationId?: string; attemptId?: string; runId: string; correlationId: string;
+}
+export interface AssessmentAdapter { readonly kind: "deterministic" | "manual" | "model"; readonly version: string; evaluate(input: AssessmentAdapterInput): Promise<AssessmentDraft>; completedRunProvenance?(): AssessmentRunProvenance | undefined }
 export interface AdvisoryAssessmentProvider extends AssessmentAdapter { readonly providerKind: "deterministic_local" | "future_model"; readonly providerVersion: string }
 
 export class DeterministicAssessmentAdapter implements AdvisoryAssessmentProvider {

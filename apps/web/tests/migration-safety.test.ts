@@ -47,3 +47,9 @@ test("Sprint 6.4 migration additively preserves requested and resolved model pro
   assert.match(sql, /ADD COLUMN "requested_model_version" TEXT/); assert.match(sql, /ADD COLUMN "resolved_model_version" TEXT/);
   assert.doesNotMatch(sql, /DROP|DELETE|TRUNCATE|ALTER COLUMN/i);
 });
+
+test("Sprint 6.4.2 migration additively correlates bounded live provenance while preserving legacy nulls", async () => {
+  const sql = await readFile(new URL("../prisma/migrations/20260810160000_sprint_6_4_2_provenance_hardening/migration.sql", import.meta.url), "utf8");
+  for (const column of ["configuration_digest", "provider_run_id", "provider_correlation_id", "browser_authorization_id", "browser_attempt_id"]) assert.match(sql, new RegExp(`ADD COLUMN "${column}" TEXT`));
+  assert.match(sql, /assessment_live_provenance_bounded/); assert.match(sql, /assessment_browser_authorization_attempt_unique/); assert.doesNotMatch(sql, /NOT NULL|DEFAULT|DROP|DELETE|TRUNCATE|api_key|raw_prompt|raw_response/i);
+});

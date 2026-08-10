@@ -466,6 +466,11 @@ model Assessment {
   schemaVersion          String?                      @map("schema_version")
   claimReferenceContractVersion String?               @map("claim_reference_contract_version")
   actionContractVersion  String?                      @map("action_contract_version")
+  configurationDigest    String?                      @map("configuration_digest")
+  providerRunId          String?                      @map("provider_run_id")
+  providerCorrelationId  String?                      @map("provider_correlation_id")
+  browserAuthorizationId String?                      @map("browser_authorization_id")
+  browserAttemptId       String?                      @map("browser_attempt_id")
   policyVersion          String                       @map("policy_version")
   status                 AssessmentStatus
   confidence             Json                         @db.JsonB
@@ -496,6 +501,7 @@ model Assessment {
   @@unique([id, agreementId, versionId])
   @@index([agreementId, versionId, occurredAt(sort: Desc), id(sort: Desc)])
   @@index([evidenceSetId, status])
+  @@unique([browserAuthorizationId, browserAttemptId], map: "assessment_browser_authorization_attempt_unique")
   @@unique([agreementId, versionId, documentDigest, evidenceSetDigest, adapterVersion, policyVersion, promptVersion, schemaVersion, actionContractVersion], map: "assessment_evaluation_envelope_unique")
   @@map("assessments")
 }

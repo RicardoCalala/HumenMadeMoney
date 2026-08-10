@@ -1,4 +1,4 @@
-import type { AssessmentAdapterInput, AdvisoryAssessmentProvider } from "./adapter.ts";
+import type { AssessmentAdapterInput, AssessmentRunProvenance, AdvisoryAssessmentProvider } from "./adapter.ts";
 import { DeterministicAssessmentAdapter } from "./adapter.ts";
 import { parseAiProviderConfig, type AiProviderConfig } from "./ai-config.ts";
 import { OpenAiAssessmentAdapter, type OpenAiTransport } from "./openai-adapter.ts";
@@ -45,11 +45,12 @@ export class DevelopmentAssessmentProviderSelector {
     const config = parseAiProviderConfig(this.env);
     const provider = new OpenAiAssessmentAdapter(this.transportFactory(), config);
     const path = this.env.HMM_AI_BROWSER_AUTHORIZATION_RECORD!; const projectLabel = this.env.HMM_AI_NON_SECRET_PROJECT_LABEL!; const fixture = this.env.HMM_AI_BROWSER_FIXTURE_ID!;
-    const guarded: AdvisoryAssessmentProvider = { kind: provider.kind, version: provider.version, providerKind: provider.providerKind, providerVersion: provider.providerVersion, evaluate: async (value) => {
+    let provenance: AssessmentRunProvenance | undefined;
+    const guarded: AdvisoryAssessmentProvider = { kind: provider.kind, version: provider.version, providerKind: provider.providerKind, providerVersion: provider.providerVersion, completedRunProvenance: () => provenance, evaluate: async (value) => { provenance = undefined;
       const productEnvelope = { input: { ...value, evidenceSetId: "browser-authorization-preview" }, uiEnabled: this.env.HMM_AI_ASSESSMENT_UI_ENABLED, credentialEnvironment: this.env.HMM_AI_CREDENTIAL_ENVIRONMENT, dataClassification: this.env.HMM_AI_DATA_CLASSIFICATION };
       const snapshot = buildSmokeAuthorizationSnapshot(config, projectLabel, fixture, productEnvelope);
-      try { await consumeSmokeAuthorization(path, snapshot); } catch { throw new ProviderAssessmentError("CONFIGURATION", "A fresh matching one-time browser authorization is required."); }
-      try { const result = await provider.evaluate(value); await finalizeSmokeAuthorization(path, "completed"); return result; }
+      let authorization; try { authorization = await consumeSmokeAuthorization(path, snapshot); } catch { throw new ProviderAssessmentError("CONFIGURATION", "A fresh matching one-time browser authorization is required."); }
+      try { const result = await provider.evaluate(value); const run = provider.completedRunProvenance(); if (!run) throw new ProviderAssessmentError("MALFORMED_OUTPUT", "Completed provider provenance is unavailable."); provenance = { ...run, configurationDigest: authorization.configDigest, authorizationId: authorization.authorizationId, attemptId: authorization.attemptId }; await finalizeSmokeAuthorization(path, "completed"); return result; }
       catch (error) { await finalizeSmokeAuthorization(path, "failed", error instanceof Error && "code" in error && typeof error.code === "string" ? error.code : "PROVIDER_FAILURE"); throw error; }
     } };
     return { provider: guarded, requestedProvider: "openai", config };

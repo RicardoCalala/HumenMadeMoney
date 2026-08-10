@@ -30,9 +30,10 @@ test("browser model evaluation consumes one exact authorization before the fake 
   try {
     const env = { ...enabled, HMM_AI_BROWSER_AUTHORIZATION_RECORD: path }; const config = parseAiProviderConfig(env);
     const envelope = { input: { ...smokeInput, evidenceSetId: "browser-authorization-preview" }, uiEnabled: "true", credentialEnvironment: "development", dataClassification: "synthetic_non_sensitive" };
-    await createSmokeAuthorization(path, buildSmokeAuthorizationSnapshot(config, "HMM development", "hmm-browser-fixture", envelope), new Date(Date.now() + 60_000).toISOString());
+    const authorization = await createSmokeAuthorization(path, buildSmokeAuthorizationSnapshot(config, "HMM development", "hmm-browser-fixture", envelope), new Date(Date.now() + 60_000).toISOString());
     const selector = new DevelopmentAssessmentProviderSelector(env, () => ({ createResponse: async () => { calls++; return { id: "offline", model: config.model, status: "completed", output_text: JSON.stringify(smokeOutput) }; } }));
-    await selector.select(smokeInput).provider.evaluate(smokeInput); assert.equal(calls, 1); assert.equal((await readSmokeAuthorization(path)).status, "completed");
-    await assert.rejects(() => selector.select(smokeInput).provider.evaluate(smokeInput)); assert.equal(calls, 1);
+    const provider = selector.select(smokeInput).provider; await provider.evaluate(smokeInput); assert.equal(calls, 1); assert.equal((await readSmokeAuthorization(path)).status, "completed");
+    const provenance = provider.completedRunProvenance?.(); assert.equal(provenance?.configurationDigest, authorization.configDigest); assert.equal(provenance?.authorizationId, authorization.authorizationId); assert.equal(provenance?.attemptId, authorization.attemptId); assert.equal(provenance?.adapterVersion, "openai-adapter-v2"); assert.equal(provenance?.requestedModelVersion, config.model); assert.equal(provenance?.resolvedModelVersion, config.model); assert.equal(provenance?.policyVersion, config.policyVersion);
+    const failedProvider = selector.select(smokeInput).provider; await assert.rejects(() => failedProvider.evaluate(smokeInput)); assert.equal(calls, 1); assert.equal(failedProvider.completedRunProvenance?.(), undefined);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });

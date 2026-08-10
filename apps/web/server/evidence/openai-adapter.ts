@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { advisoryNextActions, type AssessmentAdapterInput, type AssessmentDraft, type AdvisoryAssessmentProvider } from "./adapter.ts";
+import { advisoryNextActions, type AssessmentAdapterInput, type AssessmentDraft, type AssessmentRunProvenance, type AdvisoryAssessmentProvider } from "./adapter.ts";
 import { assertOpenAiEnabled, type AiProviderConfig } from "./ai-config.ts";
 import { evidenceSetDigest } from "./domain.ts";
 
@@ -135,9 +135,11 @@ export function validateOpenAiDraft(raw: unknown, input: AssessmentAdapterInput)
 export class OpenAiAssessmentAdapter implements AdvisoryAssessmentProvider {
   readonly kind = "model" as const; readonly version = "openai-adapter-v2"; readonly providerKind = "future_model" as const; readonly providerVersion = "openai-responses-v1"; readonly providerName = "openai";
   private active = 0; private requests: number[] = []; lastRunMetadata?: AiRunMetadata;
+  completedRunProvenance(): AssessmentRunProvenance | undefined { const value = this.lastRunMetadata; return value?.status === "completed" ? { providerName: "openai", providerClass: "development_model", adapterVersion: value.adapterVersion, requestedModelVersion: value.requestedModel, ...(value.resolvedModel ? { resolvedModelVersion: value.resolvedModel, modelVersion: value.resolvedModel } : {}), promptVersion: value.promptVersion, schemaVersion: value.schemaVersion, policyVersion: value.policyVersion, runId: value.runId, correlationId: value.correlationId } : undefined; }
   private readonly transport: OpenAiTransport; private readonly config: AiProviderConfig; private readonly now: () => number; private readonly sleep: (ms: number, signal: AbortSignal) => Promise<void>;
   constructor(transport: OpenAiTransport, config: AiProviderConfig, now = () => Date.now(), sleep = (ms: number, signal: AbortSignal) => new Promise<void>((resolve, reject) => { const timer = setTimeout(resolve, ms); signal.addEventListener("abort", () => { clearTimeout(timer); reject(new ProviderAssessmentError("CANCELLED", "Provider run was cancelled.")); }, { once: true }); })) { this.transport = transport; this.config = config; this.now = now; this.sleep = sleep; }
   async evaluate(input: AssessmentAdapterInput, controls?: ProviderRunControls): Promise<AssessmentDraft> {
+    this.lastRunMetadata = undefined;
     try { assertOpenAiEnabled(this.config); } catch { throw new ProviderAssessmentError(this.config.globalKillSwitch || this.config.environmentKillSwitch || this.config.openAiKillSwitch || this.config.modelKillSwitch ? "KILL_SWITCH" : "CONFIGURATION", "The OpenAI advisory provider is disabled."); }
     const started = this.now(); const run = controls ?? { runId: randomUUID(), correlationId: randomUUID(), deadlineAt: new Date(started + this.config.timeoutMs).toISOString(), signal: new AbortController().signal, maxInputTokens: this.config.maxInputTokens, maxOutputTokens: this.config.maxOutputTokens, maxEstimatedCostMinor: this.config.maxEstimatedCostMinor };
     const request = buildOpenAiRequest(input, this.config); const inputText = canonical(request.input); const estimatedInput = Math.ceil(inputText.length / 4); const estimatedCost = Math.ceil((estimatedInput * this.config.inputCostMinorPerMillion + run.maxOutputTokens * this.config.outputCostMinorPerMillion) / 1_000_000);

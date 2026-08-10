@@ -18,7 +18,7 @@ The report contains only key presence as `apiKeyPresent: false`; it never prints
 
 ## Later authorized one-call window
 
-Do not perform this section without a fresh founder statement naming the non-production project, approved model, fixture `hmm-smoke-fixture-v1`, limits, and date/time.
+Do not perform this section without a fresh founder statement naming the non-production project, approved model, fixture `hmm-smoke-fixture-v2`, limits, and date/time.
 
 1. In a new terminal that is not being recorded, disable shell history for the session. Securely read the project-scoped key without echoing it, then export it as `HMM_AI_OPENAI_API_KEY`. Do not put the value on a command line, in a file, or in chat.
 2. Set `NODE_ENV=development`; the approved model as both `HMM_AI_OPENAI_MODEL` and the sole `HMM_AI_OPENAI_MODEL_ALLOWLIST`; the exact approved upward-rounded input/output prices; pinned prompt/schema/policy versions; the eight numeric limits in the Sprint plan; all four kill switches explicitly false; and only then all three enable flags true.
@@ -33,7 +33,7 @@ Do not perform this section without a fresh founder statement naming the non-pro
    ```sh
    mkdir -p ../../.hmm-smoke-authorizations
    pnpm ai:smoke:authorize -- --synthetic-only \
-     --record ../../.hmm-smoke-authorizations/sprint-6.2.2.json \
+     --record ../../.hmm-smoke-authorizations/sprint-6.2.3-v2-attempt.json \
      --project-label "<EXACT NON-SECRET PROJECT LABEL>" \
      --expires-at "<FUTURE RFC3339 TIMESTAMP>"
    ```
@@ -44,7 +44,7 @@ Do not perform this section without a fresh founder statement naming the non-pro
 
    ```sh
    pnpm ai:smoke:live -- --synthetic-only \
-     --authorization-record ../../.hmm-smoke-authorizations/sprint-6.2.2.json \
+     --authorization-record ../../.hmm-smoke-authorizations/sprint-6.2.3-v2-attempt.json \
      --project-label "<EXACT NON-SECRET PROJECT LABEL>"
    ```
 
@@ -54,6 +54,6 @@ The live harness has no loop or retry runner, requires `maxAttempts=1`, accepts 
 
 ## Claim-support contract
 
-The model must bind each factual statement to a cited revision and permitted metadata field, copying the canonical JSON value verbatim without changing type, spelling, timestamp precision, or timezone notation. The validator remains fail-closed for fabricated citations, missing fields, altered values, type changes, inference, and authority escalation.
+HMM supplies deterministic `claimReferenceId` values scoped to the exact accepted agreement version, frozen evidence set, criterion, evidence revision, allowed requirement, metadata field, canonical typed-value digest, and provenance. The model returns only those references for factual support; it does not return or reproduce canonical evidence values. HMM independently rebuilds the reference map and resolves each accepted reference to its canonical typed value in memory.
 
-One deterministic equivalence is formally defined for metadata fields ending in `At` or `Timestamp`: two valid timestamp strings are equivalent only when they parse to the identical millisecond instant. This covers harmless `Z` versus `.000Z` formatting while rejecting changed instants, human-readable paraphrases, non-timestamp fields, and every other normalization.
+The validator remains fail-closed for fabricated, duplicate, stale, changed-revision, cross-agreement, cross-version, cross-evidence-set, cross-criterion, misbound, unauthorized, or sensitive references. Explanations remain advisory and cannot replace claim references or grant reviewer, Financial Safety, resolution, authorization, release, refund, or settlement authority.

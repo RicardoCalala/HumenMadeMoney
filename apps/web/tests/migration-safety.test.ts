@@ -32,3 +32,12 @@ test("Sprint 5.7 migration is additive, simulated-only, and has no proposal-expi
   assert.doesNotMatch(sql, /"expires_at"[^,;]*DEFAULT/i);
   assert.doesNotMatch(sql, /provider|custody|bank_account|payment_token/i);
 });
+
+test("Sprint 6.3 migration is additive and bounds durable assessment provenance", async () => {
+  const sql = await readFile(new URL("../prisma/migrations/20260809180000_sprint_6_3_assessment_product/migration.sql", import.meta.url), "utf8");
+  assert.doesNotMatch(sql, /\bDROP\s+(TABLE|COLUMN|TYPE)\b/i);
+  for (const column of ["document_digest", "evidence_set_digest", "provider_class", "prompt_version", "schema_version", "action_contract_version", "authority_safe", "requested_at", "completed_at"]) assert.match(sql, new RegExp(`ADD COLUMN "${column}"`));
+  assert.match(sql, /assessment_execution_metadata_bounded/);
+  assert.match(sql, /assessment_evaluation_envelope_unique/);
+  assert.doesNotMatch(sql, /api_key|authorization_header|raw_prompt|raw_response|chain_of_thought/i);
+});

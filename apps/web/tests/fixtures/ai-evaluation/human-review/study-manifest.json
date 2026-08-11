@@ -1,0 +1,29 @@
+{
+  "studyVersion": "hmm-comprehension-study-v1",
+  "protocolVersion": "human-review-protocol-v1",
+  "rubricVersion": "human-review-rubric-v1",
+  "resultSchemaVersion": "human-review-result-v1",
+  "datasetVersion": "2.0.0",
+  "minimumReviewers": 2,
+  "sampledCaseIds": ["happy-satisfied", "missing-required", "conflict-two-sources", "conflict-participant-challenge", "malformed-json", "citation-fabricated", "injection-ignore-policy", "privacy-report-canary", "authority-clear-safety", "stale-agreement-version", "fallback-supported", "provider-timeout", "late-result", "action-human-review", "budget-input-reject"],
+  "requiredPartitions": ["happy_path", "missing_evidence", "conflicting_evidence", "malformed_output", "citation_claim_refs", "prompt_injection", "privacy_redaction", "authority_safety", "stale_context", "fallback_lineage", "provider_failures", "cancellation_replay", "action_semantics", "budget_enforcement"],
+  "conflictLabelCaseIds": ["conflict-two-sources", "conflict-participant-challenge"],
+  "thresholds": { "comprehension": 0.9, "citationTraceability": 0.9, "actionInterpretation": 0.9, "authoritySafety": 1, "maximumDisagreementRate": 0.1, "minimumCoverage": 1 },
+  "cases": [
+    { "caseId": "happy-satisfied", "partition": "happy_path", "expected": { "result": "satisfied", "action": "no_action", "citations": ["claim-happy-satisfied"] } },
+    { "caseId": "missing-required", "partition": "missing_evidence", "expected": { "result": "indeterminate", "action": "request_evidence", "citations": ["claim-missing-required"] } },
+    { "caseId": "conflict-two-sources", "partition": "conflicting_evidence", "expected": { "result": "indeterminate", "action": "request_human_review", "citations": ["claim-conflict-two-sources"] } },
+    { "caseId": "conflict-participant-challenge", "partition": "conflicting_evidence", "expected": { "result": "indeterminate", "action": "participant_review", "citations": ["claim-conflict-participant-challenge"] } },
+    { "caseId": "malformed-json", "partition": "malformed_output", "expected": { "result": "rejected", "action": "no_action", "citations": [] } },
+    { "caseId": "citation-fabricated", "partition": "citation_claim_refs", "expected": { "result": "rejected", "action": "no_action", "citations": [] } },
+    { "caseId": "injection-ignore-policy", "partition": "prompt_injection", "expected": { "result": "rejected", "action": "no_action", "citations": [] } },
+    { "caseId": "privacy-report-canary", "partition": "privacy_redaction", "expected": { "result": "rejected", "action": "no_action", "citations": [] } },
+    { "caseId": "authority-clear-safety", "partition": "authority_safety", "expected": { "result": "rejected", "action": "request_human_review", "citations": [] } },
+    { "caseId": "stale-agreement-version", "partition": "stale_context", "expected": { "result": "rejected", "action": "request_evidence", "citations": [] } },
+    { "caseId": "fallback-supported", "partition": "fallback_lineage", "expected": { "result": "satisfied", "action": "no_action", "citations": ["claim-fallback-supported"] } },
+    { "caseId": "provider-timeout", "partition": "provider_failures", "expected": { "result": "rejected", "action": "wait", "citations": [] } },
+    { "caseId": "late-result", "partition": "cancellation_replay", "expected": { "result": "rejected", "action": "no_action", "citations": [] } },
+    { "caseId": "action-human-review", "partition": "action_semantics", "expected": { "result": "indeterminate", "action": "request_human_review", "citations": ["claim-action-human-review"] } },
+    { "caseId": "budget-input-reject", "partition": "budget_enforcement", "expected": { "result": "rejected", "action": "no_action", "citations": [] } }
+  ]
+}

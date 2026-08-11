@@ -11,3 +11,4 @@ coverage/
 .DS_Store
 .vscode/
 apps/web/evaluation-reports/
+apps/web/human-review-results/

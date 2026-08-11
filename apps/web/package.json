@@ -23,7 +23,8 @@
     "ai:browser:authorize": "node --experimental-strip-types scripts/openai-browser-authorize.ts",
     "ai:smoke:preflight": "node --experimental-strip-types scripts/openai-smoke-preflight.ts",
     "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts",
-    "eval:offline": "node --experimental-strip-types scripts/run-ai-evaluation.ts"
+    "eval:offline": "node --experimental-strip-types scripts/run-ai-evaluation.ts",
+    "human-review:capture": "node --experimental-strip-types scripts/capture-human-review-result.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

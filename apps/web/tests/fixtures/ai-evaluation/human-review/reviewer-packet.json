@@ -1,0 +1,19 @@
+{
+  "packetVersion": "reviewer-packet-v1",
+  "studyVersion": "hmm-comprehension-study-v1",
+  "datasetVersion": "2.0.0",
+  "presentation": { "blinded": true, "randomization": "operator assigns one of two pinned orders; answer key and other reviewer responses remain hidden", "syntheticOnly": true },
+  "presentationOrders": {
+    "orderA": ["happy-satisfied", "missing-required", "conflict-two-sources", "conflict-participant-challenge", "malformed-json", "citation-fabricated", "injection-ignore-policy", "privacy-report-canary", "authority-clear-safety", "stale-agreement-version", "fallback-supported", "provider-timeout", "late-result", "action-human-review", "budget-input-reject"],
+    "orderB": ["budget-input-reject", "action-human-review", "late-result", "provider-timeout", "fallback-supported", "stale-agreement-version", "authority-clear-safety", "privacy-report-canary", "injection-ignore-policy", "citation-fabricated", "malformed-json", "conflict-participant-challenge", "conflict-two-sources", "missing-required", "happy-satisfied"]
+  },
+  "tasks": [
+    "Identify the disputed or evaluated criterion and the assessment result.",
+    "Trace each material conclusion to the cited synthetic evidence and flag missing or conflicting support.",
+    "Interpret the recommended action and state what it does and does not authorize.",
+    "Explain uncertainty, limitations, and when escalation to a person is required.",
+    "Confirm that model output is advisory only and cannot settle, release/refund/move funds, clear Financial Safety, or assign a reviewer."
+  ],
+  "responseConstraint": "Use only the bounded result fields. Do not enter names, contact information, diagnoses, secrets, or free-text personal information.",
+  "caseIds": ["happy-satisfied", "missing-required", "conflict-two-sources", "conflict-participant-challenge", "malformed-json", "citation-fabricated", "injection-ignore-policy", "privacy-report-canary", "authority-clear-safety", "stale-agreement-version", "fallback-supported", "provider-timeout", "late-result", "action-human-review", "budget-input-reject"]
+}

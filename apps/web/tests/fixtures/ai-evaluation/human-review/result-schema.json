@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "human-review-result-v1",
+  "oneOf": [
+    { "$ref": "#/$defs/reviewerSubmission" },
+    { "$ref": "#/$defs/adjudication" }
+  ],
+  "$defs": {
+    "id": { "type": "string", "pattern": "^(REV|OPR|ADJ)-[A-Z0-9]{8,32}$" },
+    "versions": {
+      "type": "object",
+      "required": ["schemaVersion", "studyVersion", "rubricVersion", "datasetVersion", "submittedAt", "testOnly", "operatorId"],
+      "properties": {
+        "schemaVersion": { "const": "human-review-result-v1" }, "studyVersion": { "const": "hmm-comprehension-study-v1" }, "rubricVersion": { "const": "human-review-rubric-v1" }, "datasetVersion": { "const": "2.0.0" },
+        "submittedAt": { "type": "string", "format": "date-time" }, "testOnly": { "const": false }, "operatorId": { "$ref": "#/$defs/id" }
+      }
+    },
+    "reviewerSubmission": {
+      "allOf": [{ "$ref": "#/$defs/versions" }], "type": "object", "additionalProperties": false,
+      "required": ["recordType", "schemaVersion", "studyVersion", "rubricVersion", "datasetVersion", "submissionId", "reviewerId", "operatorId", "submittedAt", "testOnly", "eligibility", "responses"],
+      "properties": {
+        "recordType": { "const": "reviewer_submission" }, "schemaVersion": {}, "studyVersion": {}, "rubricVersion": {}, "datasetVersion": {}, "submissionId": { "type": "string", "format": "uuid" }, "reviewerId": { "$ref": "#/$defs/id" }, "operatorId": { "$ref": "#/$defs/id" }, "submittedAt": {}, "testOnly": {},
+        "eligibility": { "type": "object", "additionalProperties": false, "required": ["adult", "productFamiliarityAttested", "noConflictAttested", "independentWorkAttested", "noSensitiveDataIncluded"], "properties": { "adult": { "const": true }, "productFamiliarityAttested": { "const": true }, "noConflictAttested": { "const": true }, "independentWorkAttested": { "const": true }, "noSensitiveDataIncluded": { "const": true } } },
+        "responses": { "type": "array", "minItems": 15, "maxItems": 15, "items": { "type": "object", "additionalProperties": false, "required": ["caseId", "result", "action", "citations", "authorityBoundary"], "properties": { "caseId": { "type": "string" }, "result": { "type": "string" }, "action": { "type": "string" }, "citations": { "type": "array", "items": { "type": "string" }, "maxItems": 8 }, "authorityBoundary": { "enum": ["advisory_only_no_funds_authority", "model_may_authorize_settlement"] } } } }
+      }
+    },
+    "adjudication": {
+      "allOf": [{ "$ref": "#/$defs/versions" }], "type": "object", "additionalProperties": false,
+      "required": ["recordType", "schemaVersion", "studyVersion", "rubricVersion", "datasetVersion", "adjudicationId", "adjudicatorId", "operatorId", "submittedAt", "testOnly", "reviewerSubmissionIds", "caseId", "resolution", "rationaleCode", "eligibility"],
+      "properties": { "recordType": { "const": "adjudication" }, "schemaVersion": {}, "studyVersion": {}, "rubricVersion": {}, "datasetVersion": {}, "adjudicationId": { "type": "string", "format": "uuid" }, "adjudicatorId": { "$ref": "#/$defs/id" }, "operatorId": { "$ref": "#/$defs/id" }, "submittedAt": {}, "testOnly": {}, "reviewerSubmissionIds": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string", "format": "uuid" } }, "caseId": { "type": "string", "maxLength": 80 }, "resolution": { "type": "object", "additionalProperties": false, "required": ["result", "action", "citations"], "properties": { "result": { "type": "string", "maxLength": 32 }, "action": { "type": "string", "maxLength": 32 }, "citations": { "type": "array", "maxItems": 8, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,79}$" } } } }, "rationaleCode": { "enum": ["evidence_key_applied", "protocol_clarification"] }, "eligibility": { "type": "object", "additionalProperties": false, "required": ["noConflictAttested", "independentOfReviewersAttested", "noSensitiveDataIncluded"], "properties": { "noConflictAttested": { "const": true }, "independentOfReviewersAttested": { "const": true }, "noSensitiveDataIncluded": { "const": true } } } }
+    }
+  }
+}

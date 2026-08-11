@@ -4,6 +4,8 @@ Status: **ALL FOUNDER POLICY/DESIGN DECISIONS APPROVED — STUDY NOT READY TO EX
 
 Recorded at `2026-08-11T04:39:40Z` from the founder's completed governance decisions. This record approves the bounded study policy and design only. It does not establish that reviewers have been recruited or found eligible, assign presentation orders, recruit an adjudicator, create human submissions, complete independent digest verification, or qualify the study.
 
+Operator-alias approval recorded at `2026-08-11T04:50:06Z`: the founder explicitly approved `OPR-HMM00001` for Ricardo's operator-only role. This approval changes no frozen protocol, schema, threshold, case, presentation order, or release-gate behavior.
+
 Record only bounded aliases in this repository. Keep names, contact details, accommodation or diagnosis information, employment files, and real-person-to-alias verification outside Git and outside the study ledger. Genuine reviewer submissions are required. Fixtures, `TST-*` identities, and `testOnly: true` records are structurally invalid for release qualification.
 
 ## Frozen configuration checkpoint
@@ -46,13 +48,16 @@ If the intended execution commit differs, or any frozen version, case set, order
 
 ### 4. Operator and separation of duties
 
-- **Status:** `APPROVED AS POLICY — NOT EXECUTABLE WITH THE REQUESTED ALIAS`
+- **Status:** `APPROVED — PROTOCOL-COMPATIBLE ALIAS RECORDED`
 - **Founder role:** Ricardo serves only as study operator, not as reviewer or adjudicator, and may distribute approved materials and capture one validated record at a time without altering answers.
-- **Requested operator alias:** `OPR-001`
-- **Protocol compatibility:** `INCOMPATIBLE`. The frozen protocol, result schema, and current release validator require `OPR-[A-Z0-9]{8,32}`; `OPR-001` has only three characters after the prefix and would be rejected.
-- **Fail-closed result:** Do not mark the study executable, do not change the frozen protocol, and do not invent a replacement alias. A founder-approved protocol-compatible operator alias remains required before execution.
-- **Separation of duties:** `APPROVED`, subject to resolving the alias incompatibility without changing the frozen protocol.
-- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
+- **Previously requested operator alias:** `OPR-001` (`INCOMPATIBLE`; retained as decision history).
+- **Founder-approved operator alias:** `OPR-HMM00001`
+- **Protocol compatibility:** `COMPATIBLE`. `OPR-HMM00001` has eight uppercase alphanumeric characters after `OPR-` and matches the unchanged frozen `OPR-[A-Z0-9]{8,32}` requirement in the protocol, result schema, and release validator.
+- **Role compatibility:** `COMPATIBLE`. The frozen protocol permits the operator to distribute packets and capture records, while excluding the operator from reviewing or adjudicating. Ricardo remains limited to that operator-only role.
+- **Fail-closed result:** Alias approval does not make the study executable. Keep the study `NOT_QUALIFIED` until every remaining genuine start prerequisite is complete; do not change the frozen protocol or schema.
+- **Separation of duties:** `APPROVED` under `OPR-HMM00001`.
+- **Original policy timestamp (UTC):** `2026-08-11T04:39:40Z`
+- **Alias approval recorded timestamp (UTC):** `2026-08-11T04:50:06Z`
 
 ### 5. Adjudicator-selection process
 
@@ -110,7 +115,7 @@ If the intended execution commit differs, or any frozen version, case set, order
 ## Approval and execution-readiness gate
 
 - **All ten founder policy/design decisions individually approved:** `YES`
-- **Frozen protocol-compatible operator alias approved:** `NO — OPR-001 IS INCOMPATIBLE`
+- **Frozen protocol-compatible operator alias approved:** `YES — OPR-HMM00001`
 - **Two actual eligible independent reviewers recruited and verified:** `NO`
 - **Two protocol-compatible operational reviewer aliases recorded:** `NO`
 - **Presentation orders assigned:** `NO`
@@ -128,13 +133,13 @@ If the intended execution commit differs, or any frozen version, case set, order
 
 ## Exact prerequisites before the genuine study may start
 
-1. Confirm the intended execution commit and reverify that every frozen artifact, case set, order, threshold, schema, and release-gate behavior is unchanged, with no genuine ledger accidentally present or unintentionally continued.
-2. Founder approves a protocol-compatible operator alias matching `OPR-[A-Z0-9]{8,32}` for Ricardo. The approved role separation already permits the founder to operate, but literal `OPR-001` cannot enter a valid release record.
-3. Recruit two actual adults matching the approved profiles; separately complete and document the frozen eligibility, orientation, independence, conflict, answer-key-exposure, and operator/scoring-author separation checks outside the repository; then assign distinct protocol-compatible `REV-*` aliases without storing real names here.
-4. Confirm requested accessible format and operational support can be provided without materially changing the measured construct; otherwise pause.
-5. Confirm the controlled external alias-verification record, controlled local ledger location, separate encrypted backup, operator-only serial capture window, and recovery procedure are operational.
-6. Select or confirm an independent person other than the operator who will record or confirm the final ledger-head SHA-256 digest after 30 reviews. This must be committed before start even though the digest is produced only at closure.
-7. Only after prerequisites 1–6 are complete, assign frozen `orderA` to the first finalized eligible reviewer and `orderB` to the second, with no performance-based assignment, and distribute the blinded approved materials.
+The intended execution baseline and unchanged frozen artifacts were reconfirmed while recording the alias approval. The founder-approved alias `OPR-HMM00001` satisfies the frozen schema. The remaining prerequisites are:
+
+1. Recruit two actual adults matching the approved profiles; separately complete and document the frozen eligibility, orientation, independence, conflict, answer-key-exposure, and operator/scoring-author separation checks outside the repository; only after verification assign distinct protocol-compatible `REV-*` aliases without storing real names here. **This is the exact next blocker.**
+2. Confirm requested accessible format and operational support can be provided without materially changing the measured construct; otherwise pause.
+3. Confirm the controlled external alias-verification record, controlled local ledger location, separate encrypted backup, operator-only serial capture window, and recovery procedure are operational.
+4. Select or confirm an independent person other than the operator who will record or confirm the final ledger-head SHA-256 digest after 30 reviews. This must be committed before start even though the digest is produced only at closure.
+5. Only after prerequisites 1–4 are complete, assign frozen `orderA` to the first finalized eligible reviewer and `orderB` to the second, with no performance-based assignment, and distribute the blinded approved materials.
 
 Adjudicator recruitment is not a start prerequisite under approved Option B; it becomes mandatory only if eligible non-critical disagreement requires adjudication. If then unavailable, the study remains `NOT_QUALIFIED`.
 

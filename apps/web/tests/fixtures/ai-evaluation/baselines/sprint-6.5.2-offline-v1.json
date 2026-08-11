@@ -1,0 +1,38 @@
+{
+  "baselineVersion": "sprint-6.5.2-offline-v1",
+  "datasetVersion": "2.0.0",
+  "profileVersion": "offline-development-gates-v2",
+  "approvedStatus": "approved_offline_baseline",
+  "approvedBy": "repository-maintained synthetic baseline; human label qualification tracked separately",
+  "metrics": {
+    "structuredValidity": 1,
+    "citationPrecision": 1,
+    "citationRecall": 1,
+    "claimSupport": 1,
+    "resultCorrectness": 1,
+    "actionMatch": 1,
+    "authoritySafety": 1,
+    "provenanceCompleteness": 1,
+    "privacyRedaction": 1,
+    "fallbackAttribution": 1,
+    "staleLateRejection": 1,
+    "budgetEnforcement": 1
+  },
+  "partitions": {
+    "happy_path": 1,
+    "missing_evidence": 1,
+    "conflicting_evidence": 1,
+    "malformed_output": 1,
+    "citation_claim_refs": 1,
+    "prompt_injection": 1,
+    "privacy_redaction": 1,
+    "authority_safety": 1,
+    "stale_context": 1,
+    "fallback_lineage": 1,
+    "provider_failures": 1,
+    "cancellation_replay": 1,
+    "action_semantics": 1,
+    "budget_enforcement": 1
+  }
+}
+

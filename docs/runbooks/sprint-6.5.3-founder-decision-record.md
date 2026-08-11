@@ -1,130 +1,141 @@
 # Founder decision record — Sprint 6.5.3 human-review study
 
-Status: **PENDING — STUDY MUST NOT START**
+Status: **ALL FOUNDER POLICY/DESIGN DECISIONS APPROVED — STUDY NOT READY TO EXECUTE — NOT_QUALIFIED**
 
-This packet prepares the governance checkpoint required by the [execution runbook](sprint-6.5.3-human-review-execution.md). It does not record founder approval, identify or assign reviewers, authorize contact with anyone, or authorize result capture. The founder must personally complete every decision below before the operator assigns either blinded order.
+Recorded at `2026-08-11T04:39:40Z` from the founder's completed governance decisions. This record approves the bounded study policy and design only. It does not establish that reviewers have been recruited or found eligible, assign presentation orders, recruit an adjudicator, create human submissions, complete independent digest verification, or qualify the study.
 
-Record only the bounded aliases requested below in this repository. Keep names, contact details, accessibility or diagnosis information, employment files, and the alias-to-person verification record outside the repository in the founder-approved access-limited location. Genuine reviewer submissions are required. Fixtures, `TST-*` identities, and `testOnly: true` records are structurally invalid for release qualification.
+Record only bounded aliases in this repository. Keep names, contact details, accommodation or diagnosis information, employment files, and real-person-to-alias verification outside Git and outside the study ledger. Genuine reviewer submissions are required. Fixtures, `TST-*` identities, and `testOnly: true` records are structurally invalid for release qualification.
 
 ## Frozen configuration checkpoint
 
-Verified against repository commit `7941aacc2c9aab39d250819240a73fabe365fe12` during packet preparation:
+Verified against intended execution baseline commit `4bf27d59613f80cca15f664026f0a2374b6b49fd` while recording these decisions:
 
-- Protocol `human-review-protocol-v1`; rubric `human-review-rubric-v1`; study `hmm-comprehension-study-v1`; result schema `human-review-result-v1`; dataset `2.0.0`.
+- Protocol `human-review-protocol-v1`; rubric `human-review-rubric-v1`; study `hmm-comprehension-study-v1`; result schema `human-review-result-v1`; dataset `2.0.0` are approved unchanged.
 - Two independent reviewers each complete all 15 cases: 30 reviews total, all 14 partitions, and both reviewers complete both conflict cases (four conflict-case reviews).
 - Minimum comprehension, citation traceability, and action interpretation: 90% each. Authority safety: 100%. Maximum disagreement: 10%. Coverage: 100%.
 - `reviewer-packet-v1` contains two blinded, pinned 15-case presentation orders (`orderA` and `orderB`). Both remain unassigned.
-- No genuine result ledger is present. The fail-closed status is `NOT_QUALIFIED` with zero genuine reviewer submissions.
+- No genuine result ledger is present. The fail-closed state is `NOT_QUALIFIED` with zero genuine reviewer submissions.
 
-If the intended execution commit differs, or any frozen version, case set, order, threshold, or release-gate behavior differs, stop and prepare a newly versioned study rather than approving this record.
+If the intended execution commit differs, or any frozen version, case set, order, threshold, or release-gate behavior differs, stop and prepare a newly versioned, newly approved study rather than changing this record or the frozen artifacts.
 
 ## Ten founder decisions
 
-For each item, the founder must change `PENDING` to `APPROVED` or `REJECTED`, supply the bounded choice requested, and add a UTC decision timestamp. A blanket signature does not replace the ten individual decisions.
-
 ### 1. Frozen versions and thresholds
 
-- **Status:** `PENDING`
-- **Recommended default:** Approve the versions and thresholds exactly as listed in the configuration checkpoint; do not weaken them after seeing results.
-- **Founder choice required:** `APPROVED` / `REJECTED`
-- **Decision timestamp (UTC):** `PENDING`
-- **Founder note (optional; no sensitive data):** `PENDING`
+- **Status:** `APPROVED`
+- **Decision:** Approve unchanged `human-review-protocol-v1`, `human-review-rubric-v1`, `hmm-comprehension-study-v1`, `human-review-result-v1`, and dataset `2.0.0`; minimum comprehension, citation traceability, and action interpretation of 90% each; 100% authority safety; maximum disagreement of 10%; and 100% coverage.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 2. Sample size and coverage
 
-- **Status:** `PENDING`
-- **Recommended default:** Approve 2 independent reviewers × 15 cases = 30 reviews, all 14 partitions, plus four required conflict-case reviews.
-- **Founder choice required:** `APPROVED` / `REJECTED`
-- **Decision timestamp (UTC):** `PENDING`
-- **Founder note (optional; no sensitive data):** `PENDING`
+- **Status:** `APPROVED`
+- **Decision:** Approve unchanged two independent reviewers × 15 cases = 30 reviews, all 14 partitions, and four required conflict-case reviews.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
-### 3. Reviewer eligibility and independence
+### 3. Reviewer profiles, eligibility, and independence
 
-- **Status:** `PENDING`
-- **Recommended default:** Approve only after two real adults separately pass the eligibility, orientation, independence, and conflict checks in the frozen protocol. Each must understand the agreement/evidence/assessment/human-review distinctions and restate that assessments are advisory only. Exclude the operator, sampled-answer or scoring authors, anyone with answer-key or another reviewer's answer access, anyone unable to attest to independent work, and anyone with a direct qualification incentive or other disqualifying conflict.
-- **Founder choice required:** Confirm two eligible real people outside the repository, then record only two distinct aliases matching `REV-[A-Z0-9]{8,32}` here.
-- **Reviewer alias 1:** `PENDING`
-- **Reviewer alias 2:** `PENDING`
-- **Eligibility/orientation/conflict/independence checks completed outside repository:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
-
-Each reviewer must attest in the bounded submission that they are an adult; received the required product orientation; had no answer-key access; worked independently without seeing the other submission; and disclosed no disqualifying conflict. Employment or investment must be assessed as a potential conflict; outcome-contingent compensation, supervisory pressure, coordination, operating/scoring this run, or answer-key access is disqualifying.
+- **Status:** `APPROVED — PROFILES ONLY; RECRUITMENT AND ELIGIBILITY PENDING`
+- **`REV-001` profile label:** Independent general digitally literate adult.
+- **`REV-002` profile label:** Independent adult with somewhat stronger technical, business, or research experience.
+- **Decision:** Neither reviewer may have been involved with HMM. Both actual reviewers must pass the frozen eligibility, orientation, independence, and conflict checks before assignment or participation.
+- **Actual reviewers recruited:** `NO`
+- **Actual reviewer eligibility/orientation/conflict/independence verified:** `NO`
+- **Operational reviewer aliases:** `PENDING`
+- **Privacy note:** `REV-001` and `REV-002` are profile labels only, not claims that real people have been recruited or assigned. Do not store real names here. Operational aliases must satisfy the frozen `REV-[A-Z0-9]{8,32}` format.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 4. Operator and separation of duties
 
-- **Status:** `PENDING`
-- **Recommended default:** Select one operator who is neither reviewer nor adjudicator, did not author the sampled answers or scoring implementation, and has no authority to change answers. The operator distributes approved materials and captures one validated record at a time.
-- **Founder choice required:** Identify the real operator outside the repository and record only an alias matching `OPR-[A-Z0-9]{8,32}` here.
-- **Operator alias:** `PENDING`
-- **Separation confirmed:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED AS POLICY — NOT EXECUTABLE WITH THE REQUESTED ALIAS`
+- **Founder role:** Ricardo serves only as study operator, not as reviewer or adjudicator, and may distribute approved materials and capture one validated record at a time without altering answers.
+- **Requested operator alias:** `OPR-001`
+- **Protocol compatibility:** `INCOMPATIBLE`. The frozen protocol, result schema, and current release validator require `OPR-[A-Z0-9]{8,32}`; `OPR-001` has only three characters after the prefix and would be rejected.
+- **Fail-closed result:** Do not mark the study executable, do not change the frozen protocol, and do not invent a replacement alias. A founder-approved protocol-compatible operator alias remains required before execution.
+- **Separation of duties:** `APPROVED`, subject to resolving the alias incompatibility without changing the frozen protocol.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 5. Adjudicator-selection process
 
-- **Status:** `PENDING`
-- **Recommended default:** Precommit a selection process, not an unnecessary assignment. If eligible non-critical disagreement requires adjudication, the founder selects a qualified human independent of both reviewers and the operator, with no answer-changing authority. Critical authority, privacy, provenance, eligibility, independence, or excess-disagreement failures cannot be adjudicated into a pass.
-- **Founder choice required:** Choose either a provisionally verified alias matching `ADJ-[A-Z0-9]{8,32}` or describe the bounded selection/eligibility process without personal information.
-- **Provisional adjudicator alias or selection process:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED — OPTION B; RECRUIT ONLY IF REQUIRED`
+- **Decision:** Precommit selection of an independent adjudicator only if eligible non-critical disagreement requires adjudication. The adjudicator cannot be the operator or either reviewer, must pass independence and conflict checks, must have no outcome-contingent incentive, must use a protocol-compatible `ADJ-*` alias, and cannot waive 100% authority safety or lower any threshold.
+- **Adjudicator recruited:** `NO — NOT CURRENTLY REQUIRED`
+- **Failure rule:** If adjudication becomes necessary and no eligible independent adjudicator is available, remain `NOT_QUALIFIED`.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 6. Blinding and presentation orders
 
-- **Status:** `PENDING`
-- **Recommended default:** Approve the frozen `orderA` and `orderB`, assign one per approved reviewer only after all ten decisions are approved, and keep the answer key, scoring thresholds, aggregation report, and the other reviewer's work hidden until both submissions are sealed.
-- **Founder choice required:** Approve/reject this method. Do not record person-to-order assignment in this checkpoint.
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED`
+- **Decision:** Keep frozen `orderA` and `orderB` unchanged. After both actual reviewers are finalized and eligible, assign `orderA` to the first finalized eligible reviewer and `orderB` to the second. Do not use performance-based assignment. Keep the answer key, scoring thresholds, aggregation report, and the other reviewer's work hidden until both submissions are sealed.
+- **Order assignment completed:** `NO`
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
-### 7. Accessibility and private support
+### 7. Accessibility and private operational support
 
-- **Status:** `PENDING`
-- **Recommended default:** Offer the existing Markdown/plain-text packet with headings and text equivalents, keyboard-only use, zoom/reflow, a screen-reader-friendly or tagged accessible version on request, and additional time without penalty or a default time limit. Never require diagnosis disclosure.
-- **Founder choice required:** Identify outside the repository who will privately receive accommodation requests, which accessible formats can actually be supplied, and the extra-time policy. Record only the bounded process/support alias here, not a name, contact detail, diagnosis, or request details.
-- **Available formats:** `PENDING`
-- **Extra-time policy:** `PENDING`
-- **Support process or non-sensitive alias:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED`
+- **Available formats and tools:** Accessible digital materials or an equivalent readable format; normal operating-system and browser accessibility technology; minimum operational notation.
+- **Time and breaks:** Extra time on request without diagnosis disclosure, with reasonable breaks and no scoring disadvantage for accommodations.
+- **Support boundary:** Private operational support may help with access and mechanics but cannot interpret cases, citations, findings, authority boundaries, or suggest answers.
+- **Pause rule:** Pause if an accommodation would materially alter the measured construct.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 8. Alias verification and retention
 
-- **Status:** `PENDING`
-- **Recommended default:** Maintain one encrypted or equivalently access-controlled alias-to-person eligibility record outside this repository, accessible only to the founder and one named backup custodian if operationally necessary. Retain through study closure and any defined challenge window, then securely delete on the founder-approved date unless a documented legal/security hold applies.
-- **Founder choice required:** Specify the approved external record location/system, authorized roles, retention/challenge period, deletion trigger/date, and any hold process. Do not enter names, contact details, or sensitive path contents here.
-- **External system/location description:** `PENDING`
-- **Authorized roles:** `PENDING`
-- **Retention and deletion rule:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED`
+- **External storage:** Keep the minimal real-person-to-`REV-*` verification mapping separately from Git and the study ledger.
+- **Authorized access:** Operator only.
+- **Retention and deletion:** Delete 90 days after Sprint 6.5 qualification closure unless a documented legitimate hold genuinely requires continued retention. Minimize evidence retained for the hold and resume the deletion rule when the hold ends.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
 ### 9. Ledger access, backup, capture, and head digest
 
-- **Status:** `PENDING`
-- **Recommended default:** Keep the append-only ledger only at ignored `apps/web/human-review-results/`; permit the approved operator to capture serially in a single-operator window; grant read access only to the founder and a necessary independent verifier; make an access-controlled backup after each accepted append; and have a person other than the operator independently record the final SHA-256 head digest in an approved external controlled record. Never commit the real ledger.
-- **Founder choice required:** Identify outside the repository the access holders, backup destination and recovery owner, capture window/control, independent digest recorder, and final retention/deletion rule. Record only roles or bounded aliases here.
-- **Ledger access roles/aliases:** `PENDING`
-- **Backup destination/control and recovery owner role:** `PENDING`
-- **Serial capture window/control:** `PENDING`
-- **Independent head-digest recorder role/alias:** `PENDING`
-- **Retention/deletion rule:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED — INDEPENDENT DIGEST RECORDER PENDING`
+- **Primary access and storage:** The approved operator has primary access during execution. Keep the genuine ledger in a controlled local study location outside Git and inaccessible to the application/provider.
+- **Backup and recovery:** Maintain one encrypted backup in a separate controlled location. The operator is recovery owner.
+- **Capture:** Serial capture only, one genuine reviewer submission at a time, promptly after receipt.
+- **Integrity:** Use append-only correction semantics. After all 30 reviews, an independent person who is not the operator records or confirms the final ledger-head SHA-256 digest without edit authority.
+- **Retention:** Retain the pseudonymous ledger, qualification report, and integrity record for development/audit history. The real-person-to-alias mapping remains governed separately by Decision 8.
+- **Failure rule:** Any uncertainty about ledger integrity, ordering, backup consistency, recovery, or result authenticity stops the study and keeps it `NOT_QUALIFIED`. Never reconstruct missing answers from memory.
+- **Independent head-digest recorder selected/confirmed:** `NO`
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
-### 10. Stop and invalidation conditions
+### 10. Stop and incident handling
 
-- **Status:** `PENDING`
-- **Recommended default:** Stop immediately, preserve bounded evidence, restrict access, investigate, and keep `NOT_QUALIFIED` if privacy, independence, eligibility, provenance/chain, critical-authority, security, blinding, version, coverage, or submission-integrity controls fail. Do not repair immutable submissions, weaken thresholds, or adjudicate invalidity away. If validity is lost, close the run and execute only a newly versioned, newly approved study.
-- **Founder choice required:** Approve/reject the stop response and identify the founder-controlled incident decision role and evidence-retention location/process outside the repository using no personal details here.
-- **Incident decision role:** `PENDING`
-- **Bounded evidence-retention process:** `PENDING`
-- **Decision timestamp (UTC):** `PENDING`
+- **Status:** `APPROVED`
+- **Stop conditions:** Stop for reviewer eligibility, independence, or conflict failure; reviewer collusion; exposure to the answer key, another reviewer's responses, or prohibited material; a frozen artifact, dataset, rubric, protocol, threshold, presentation order, or qualification-rule change after execution begins; operator coaching or material influence; uncertain attribution, authenticity, ledger/hash-chain integrity, ordering, backup consistency, or recovery; a fabricated or test result entering the genuine path; accessibility support that materially changes the measured construct; software defects that could affect presentation, recording, or scoring; lost or corrupt required evidence; or any other material uncertainty about independence, authenticity, provenance, or reproducibility.
+- **On stop:** Stop capture, preserve only the minimum necessary evidence, do not alter existing submissions, do not reconstruct or manufacture answers, do not quietly restart, and remain `NOT_QUALIFIED`.
+- **Authority and restart:** The operator has immediate stop authority. Founder governance decides whether a documented clean new study may later begin.
+- **Incident evidence:** Privacy-minimized and access-limited.
+- **Recorded timestamp (UTC):** `2026-08-11T04:39:40Z`
 
-## Approval completeness gate
+## Approval and execution-readiness gate
 
-- **All ten decisions individually approved:** `NO`
-- **Two eligible reviewer aliases recorded:** `NO`
-- **Operator alias and separation confirmed:** `NO`
-- **Adjudicator candidate/process approved:** `NO`
-- **Accessibility resources/process confirmed:** `NO`
-- **External alias verification/retention approved:** `NO`
-- **Ledger access/backup/digest controls approved:** `NO`
-- **Stop conditions approved:** `NO`
-- **Study assignment authorized:** `NO`
+- **All ten founder policy/design decisions individually approved:** `YES`
+- **Frozen protocol-compatible operator alias approved:** `NO — OPR-001 IS INCOMPATIBLE`
+- **Two actual eligible independent reviewers recruited and verified:** `NO`
+- **Two protocol-compatible operational reviewer aliases recorded:** `NO`
+- **Presentation orders assigned:** `NO`
+- **Adjudicator process approved:** `YES`
+- **Adjudicator recruited:** `NO — ONLY REQUIRED IF ADJUDICATION IS NEEDED`
+- **Accessibility policy approved:** `YES`
+- **External alias verification/retention policy approved:** `YES`
+- **Ledger access/backup/capture/retention policy approved:** `YES`
+- **Independent final head-digest recorder selected/confirmed:** `NO`
+- **Stop and incident policy approved:** `YES`
+- **Genuine reviewer submissions captured:** `NO`
+- **Human-review qualification completed:** `NO`
+- **Study ready to execute:** `NO`
+- **Current release gate:** `NOT_QUALIFIED`
 
-Until every line above is truthfully complete, do not contact or assign reviewers, distribute packets, create or capture a human result, or run adjudication. Founder approval of this checkpoint authorizes only the synthetic, offline human-review study described by the frozen artifacts. It does not authorize provider calls, API-key access, production enablement/deployment, settlement, funds movement, or changes to immutable assessments or Sprint 6.4 artifacts.
+## Exact prerequisites before the genuine study may start
+
+1. Confirm the intended execution commit and reverify that every frozen artifact, case set, order, threshold, schema, and release-gate behavior is unchanged, with no genuine ledger accidentally present or unintentionally continued.
+2. Founder approves a protocol-compatible operator alias matching `OPR-[A-Z0-9]{8,32}` for Ricardo. The approved role separation already permits the founder to operate, but literal `OPR-001` cannot enter a valid release record.
+3. Recruit two actual adults matching the approved profiles; separately complete and document the frozen eligibility, orientation, independence, conflict, answer-key-exposure, and operator/scoring-author separation checks outside the repository; then assign distinct protocol-compatible `REV-*` aliases without storing real names here.
+4. Confirm requested accessible format and operational support can be provided without materially changing the measured construct; otherwise pause.
+5. Confirm the controlled external alias-verification record, controlled local ledger location, separate encrypted backup, operator-only serial capture window, and recovery procedure are operational.
+6. Select or confirm an independent person other than the operator who will record or confirm the final ledger-head SHA-256 digest after 30 reviews. This must be committed before start even though the digest is produced only at closure.
+7. Only after prerequisites 1–6 are complete, assign frozen `orderA` to the first finalized eligible reviewer and `orderB` to the second, with no performance-based assignment, and distribute the blinded approved materials.
+
+Adjudicator recruitment is not a start prerequisite under approved Option B; it becomes mandatory only if eligible non-critical disagreement requires adjudication. If then unavailable, the study remains `NOT_QUALIFIED`.
+
+Until every start prerequisite is truthfully complete, do not contact or assign reviewers through this workflow, distribute packets, create or capture a human result, or begin adjudication. These approvals do not authorize provider calls, API-key access, production enablement or deployment, settlement, funds movement, immutable-assessment changes, or Sprint 6.4 audit-artifact changes.

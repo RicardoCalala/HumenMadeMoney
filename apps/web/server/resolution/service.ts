@@ -5,13 +5,14 @@ import type { AgreementLanguageDocument } from "../../lib/agreement-language/typ
 import type { RequestContext } from "../agreements/application/contracts.ts";
 import { balancedEntries, canTransition, consequenceRef, evaluateResolutionReadiness, explicitRequirement, TERMINAL_STATES, validateEffect, type FinancialSafetyState, type ResolutionState, type SimulatedEffect } from "./domain.ts";
 
-export class ResolutionError extends Error { constructor(public code: string, message: string, public status = 422, public revision?: number) { super(message); this.name = code; } }
+export class ResolutionError extends Error { public code: string; public status: number; public revision?: number; constructor(code: string, message: string, status = 422, revision?: number) { super(message); this.code = code; this.status = status; this.revision = revision; this.name = code; } }
 type Mutation = { key: string; fingerprint: string; expectedRevision?: number };
 const json = <T>(value: T) => value as Prisma.InputJsonValue;
 const view = (proposal: any) => ({ ...proposal, simulation: true, effectiveState: proposal.state, simulatedEffect: proposal.simulatedEffect as SimulatedEffect });
 
 export class ResolutionService {
-  constructor(private prisma: PrismaClient, private clock = () => new Date()) {}
+  private readonly prisma: PrismaClient; private readonly clock: () => Date;
+  constructor(prisma: PrismaClient, clock = () => new Date()) { this.prisma = prisma; this.clock = clock; }
   private actor(context: RequestContext) { if (context.principal.kind !== "account" || context.principal.accountState !== "active") throw new ResolutionError("AUTHENTICATION_REQUIRED", "An active account session is required.", 401); return context.principal; }
   private async membership(tx: Prisma.TransactionClient | PrismaClient, agreementId: string, accountId: string) { const member = await tx.agreementMembership.findFirst({ where: { agreementId, accountId, state: "active" } }); if (!member) throw new ResolutionError("RESOURCE_NOT_FOUND", "The resolution is unavailable.", 404); return member; }
   private async idem(tx: Prisma.TransactionClient, actorId: string, operation: string, agreementId: string, mutation: Mutation) {

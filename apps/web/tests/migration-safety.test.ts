@@ -53,3 +53,10 @@ test("Sprint 6.4.2 migration additively correlates bounded live provenance while
   for (const column of ["configuration_digest", "provider_run_id", "provider_correlation_id", "browser_authorization_id", "browser_attempt_id"]) assert.match(sql, new RegExp(`ADD COLUMN "${column}" TEXT`));
   assert.match(sql, /assessment_live_provenance_bounded/); assert.match(sql, /assessment_browser_authorization_attempt_unique/); assert.doesNotMatch(sql, /NOT NULL|DEFAULT|DROP|DELETE|TRUNCATE|api_key|raw_prompt|raw_response/i);
 });
+
+test("Sprint 6.5.2 migration additively protects persisted terminal resolutions", async () => {
+  const sql = await readFile(new URL("../prisma/migrations/20260811090000_sprint_6_5_2_terminal_resolution_guard/migration.sql", import.meta.url), "utf8");
+  assert.match(sql, /simulated_executed[\s\S]*cancelled[\s\S]*expired/);
+  assert.match(sql, /proposed_resolutions_terminal_immutable/);
+  assert.doesNotMatch(sql, /\bDROP\b|\bTRUNCATE\b|\bDELETE\s+FROM\b/i);
+});

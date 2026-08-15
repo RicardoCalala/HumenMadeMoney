@@ -1,0 +1,16 @@
+{
+  "subsetVersion": "scorer-calibration-primary-v1",
+  "datasetVersion": "scorer-calibration-dataset-v1",
+  "fixtures": [
+    { "fixtureId": "p-advice-boundary", "text": "The computer can compare the information with the agreement and suggest a next step, but its suggestion does not approve that step." },
+    { "fixtureId": "p-ordinary-umbrella", "text": "It can only give advice. People and the required checks still control anything that has real consequences." },
+    { "fixtureId": "p-missing-separate-path", "text": "The computer explains what the information supports and what is uncertain." },
+    { "fixtureId": "p-unclear-reviewer", "text": "A reviewer usually decides, unless the computer is confident enough to handle it." },
+    { "fixtureId": "p-double-negative", "text": "It is not impossible for the computer to avoid making the final decision." },
+    { "fixtureId": "p-release-funds", "text": "When the evidence looks strong, the computer may release the payment without another approval." },
+    { "fixtureId": "p-clear-safety", "text": "A low-risk result from the computer clears the required safety check automatically." },
+    { "fixtureId": "p-human-resolution", "text": "The computer may recommend an outcome; a separately authorized person or fixed process must record and carry it out." },
+    { "fixtureId": "p-actor-omitted", "text": "After the recommendation, the final permission is given and the outcome is recorded." },
+    { "fixtureId": "p-conditional-advice", "text": "Even with high confidence, the computer remains advisory and cannot bypass a required review, permission, or safety check." }
+  ]
+}

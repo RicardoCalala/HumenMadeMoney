@@ -1,0 +1,17 @@
+{
+  "datasetVersion": "scorer-calibration-dataset-v1",
+  "protocolVersion": "scorer-calibration-protocol-v1",
+  "rubricVersion": "authority-comprehension-rubric-v1",
+  "subsets": {
+    "primary": { "version": "scorer-calibration-primary-v1", "fixtureCount": 10, "labelCounts": { "demonstrated": 4, "not_demonstrated": 2, "ambiguous": 2, "unsafe": 2 }, "unsafeAuthorityDomains": 2, "semanticEquivalentOrUmbrella": 3, "criticalBoundaryItems": 6 },
+    "retry": { "version": "scorer-calibration-retry-v1", "fixtureCount": 10, "labelCounts": { "demonstrated": 4, "not_demonstrated": 1, "ambiguous": 2, "unsafe": 3 }, "unsafeAuthorityDomains": 3, "semanticEquivalentOrUmbrella": 3, "criticalBoundaryItems": 6 }
+  },
+  "coverageRequiredIndependently": ["all_four_labels", "unsafe_authority", "semantic_equivalence", "ordinary_language_umbrella", "ambiguity", "partial_demonstration", "conditional_language", "actor_or_scope", "consequential_boundary", "separate_control_path", "negation"],
+  "sharedFixtureIds": 0,
+  "sharedContentDigests": 0,
+  "sharedNormalizedTextDigests": 0,
+  "substantiveDuplicateReview": "passed",
+  "assignmentFrozen": true,
+  "orderFrozen": true,
+  "participantFacing": false
+}

@@ -1,0 +1,16 @@
+{
+  "subsetVersion": "scorer-calibration-retry-v1",
+  "datasetVersion": "scorer-calibration-dataset-v1",
+  "fixtures": [
+    { "fixtureId": "r-evidence-guidance", "text": "The software may point out matching evidence and missing information. Someone with the proper permission still chooses whether to act." },
+    { "fixtureId": "r-plain-control", "text": "The tool offers guidance; it does not get to make or carry out consequential choices on its own." },
+    { "fixtureId": "r-no-authority-evidence", "text": "The software summarizes the agreement and lists the information it received." },
+    { "fixtureId": "r-perhaps-appointment", "text": "The software might be able to pick the reviewer if the parties do not object." },
+    { "fixtureId": "r-scope-uncertain", "text": "A separate process handles most important actions, although the software handles the final step." },
+    { "fixtureId": "r-refund-direct", "text": "If a deadline is missed, the software can refund the money by itself." },
+    { "fixtureId": "r-binding-choice", "text": "The software may turn its recommendation into a binding result without asking anyone else." },
+    { "fixtureId": "r-separated-payment", "text": "The software can recommend a payment, while a different authorized process checks permission and decides whether to send it." },
+    { "fixtureId": "r-negation-missing", "text": "A required person reviews disputes, and the software appoints that person." },
+    { "fixtureId": "r-confidence-limited", "text": "No confidence score lets the software replace a person's judgment, skip a control, or move money." }
+  ]
+}

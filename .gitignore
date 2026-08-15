@@ -12,3 +12,4 @@ coverage/
 .vscode/
 apps/web/evaluation-reports/
 apps/web/human-review-results/
+apps/web/scorer-calibration-private/

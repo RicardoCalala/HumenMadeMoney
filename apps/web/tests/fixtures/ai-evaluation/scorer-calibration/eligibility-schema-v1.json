@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scorer-calibration-eligibility-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "eligibilityRecordId", "attestedAt", "administratorAlias", "mappingRecordDigest", "attestations", "administratorVerified", "testOnly"],
+  "properties": {
+    "schemaVersion": { "const": "scorer-calibration-eligibility-v1" },
+    "eligibilityRecordId": { "type": "string", "format": "uuid" },
+    "attestedAt": { "type": "string", "format": "date-time" },
+    "administratorAlias": { "type": "string", "pattern": "^(?:ADM|OPR)-[A-Z0-9]{8,32}$" },
+    "mappingRecordDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "attestations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adultVoluntaryRole", "noAuthorshipImplementationOrTesting", "noPriorRestrictedExposure", "notOperatorAdministratorCustodianAdjudicatorOrOtherScorer", "noRecruitmentAdministrationCaptureAdjudicationOrLedgerRole", "noPressuringRelationshipOrOutcomeConflict", "compensationIndependentOfOutcome", "privateIndependentWorkAndIncidentDisclosure", "restrictedMaterialConfidentiality", "completeLockBeforeKeyReveal", "blindedToIdentityGroupSourcePeerAndOutcome", "noUndisclosedConflictOrExposure"],
+      "properties": {
+        "adultVoluntaryRole": { "const": true },
+        "noAuthorshipImplementationOrTesting": { "const": true },
+        "noPriorRestrictedExposure": { "const": true },
+        "notOperatorAdministratorCustodianAdjudicatorOrOtherScorer": { "const": true },
+        "noRecruitmentAdministrationCaptureAdjudicationOrLedgerRole": { "const": true },
+        "noPressuringRelationshipOrOutcomeConflict": { "const": true },
+        "compensationIndependentOfOutcome": { "const": true },
+        "privateIndependentWorkAndIncidentDisclosure": { "const": true },
+        "restrictedMaterialConfidentiality": { "const": true },
+        "completeLockBeforeKeyReveal": { "const": true },
+        "blindedToIdentityGroupSourcePeerAndOutcome": { "const": true },
+        "noUndisclosedConflictOrExposure": { "const": true }
+      }
+    },
+    "administratorVerified": { "const": true },
+    "testOnly": { "type": "boolean" }
+  },
+  "prohibitedFields": ["name", "email", "phone", "employer", "jobTitle", "education", "biography", "conflictNarrative", "diagnosis", "identityMapping", "credential", "apiKey", "storagePath"]
+}

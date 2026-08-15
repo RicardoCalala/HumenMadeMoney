@@ -2,7 +2,9 @@
 
 Status: **PENDING — NO REAL SCORER CALIBRATION — NO A-01 CONTACT**
 
-Proposed execution implementation commit: `IMPLEMENTATION_COMMIT_TO_BE_PINNED_AFTER_VALIDATION`
+Proposed execution implementation commit: `1ffe312b53957379f9e75aecf28512a6c7580811`
+
+This checkpoint record is a later governance-only commit. It pins its clean, fully validated parent implementation commit above so the Git identifier is exact and non-self-referential.
 
 Expanded artifact digest envelope: [`sprint-6.5.4-scorer-calibration-artifact-digests.md`](sprint-6.5.4-scorer-calibration-artifact-digests.md)
 

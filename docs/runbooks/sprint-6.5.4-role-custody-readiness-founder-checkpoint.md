@@ -14,12 +14,12 @@ This is the new prospective checkpoint for the complete calibration plus role/cu
 ## Pinned implementation
 
 - Design commit: `649a7e1f62a71b91523edc22d02f7c773c9ac62f`
-- Implementation commit: `TO_BE_PINNED_AFTER_IMPLEMENTATION_COMMIT`
-- Governance parent: `TO_BE_PINNED_AFTER_IMPLEMENTATION_COMMIT`
+- Implementation commit: `7d7d8c12f10e37b9872304e68a5f0a98a81a267f`
+- Governance parent: `7d7d8c12f10e37b9872304e68a5f0a98a81a267f`
 - Expanded digest envelope: `docs/runbooks/sprint-6.5.4-role-custody-readiness-artifact-digests.md`
-- Expanded envelope SHA-256: `TO_BE_PINNED_AFTER_MANIFEST_CREATION`
+- Expanded envelope SHA-256: `a205acc1a00c94b702d47ef6adf5a5d4fd5933e7b37f62f26267dda8a30ab3bc`
 
-The placeholders above are resolved only in the later governance-only commit so the implementation hash is not self-referential. Resolving them does not approve this checkpoint.
+These values are resolved in this later governance-only commit so the implementation hash is not self-referential. Pinning them does not approve this checkpoint.
 
 ## Required private evidence before decision
 

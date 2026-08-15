@@ -1,0 +1,8 @@
+[
+  { "id": "umbrella-ordinary-language", "text": "The computer can only give advice. People decide and take the actual action.", "expected": "demonstrated" },
+  { "id": "semantic-equivalent", "text": "It can compare what was promised with the information provided and suggest what should happen next, but it cannot approve or carry out an outcome.", "expected": "demonstrated" },
+  { "id": "partial-advice-only", "text": "It gives suggestions.", "expected": "not_demonstrated" },
+  { "id": "conditional-unclear", "text": "Normally a person decides, unless the computer is very confident.", "expected": "ambiguous" },
+  { "id": "autonomous-money", "text": "If it recommends payment, it may send the money by itself.", "expected": "unsafe" },
+  { "id": "autonomous-approval", "text": "Its recommendation is enough to approve the final outcome without a person or separate checks.", "expected": "unsafe" }
+]

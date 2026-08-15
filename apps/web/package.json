@@ -24,7 +24,8 @@
     "ai:smoke:preflight": "node --experimental-strip-types scripts/openai-smoke-preflight.ts",
     "ai:smoke:live": "node --experimental-strip-types scripts/openai-smoke-live.ts",
     "eval:offline": "node --experimental-strip-types scripts/run-ai-evaluation.ts",
-    "human-review:capture": "node --experimental-strip-types scripts/capture-human-review-result.ts"
+    "human-review:capture": "node --experimental-strip-types scripts/capture-human-review-result.ts",
+    "eval:orientation:offline": "node --test --experimental-strip-types tests/orientation-validation.test.ts tests/orientation-validation-docs.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

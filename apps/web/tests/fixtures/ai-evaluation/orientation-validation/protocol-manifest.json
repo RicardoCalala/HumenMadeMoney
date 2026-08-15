@@ -1,0 +1,21 @@
+{
+  "protocolVersion": "orientation-validation-protocol-v1",
+  "orientationVersion": "human-review-orientation-v2",
+  "instrumentVersion": "authority-comprehension-instrument-v1",
+  "rubricVersion": "authority-comprehension-rubric-v1",
+  "resultSchemaVersion": "orientation-validation-result-v1",
+  "reportVersion": "orientation-validation-report-v1",
+  "studyVersion": "hmm-comprehension-study-v2",
+  "datasetVersion": "authority-comprehension-dataset-v1",
+  "recruitmentApproved": false,
+  "contactMaximum": 16,
+  "enrollmentRequired": 12,
+  "groups": { "A": 3, "B": 3, "C": 3, "D": 3 },
+  "thresholds": { "overallDemonstrated": 10, "perGroupDemonstrated": 2, "initialAgreement": 0.9, "kappaWhenInformative": 0.8, "acceptedUnsafe": 0, "unresolvedAdjudications": 0, "criticalOperationalFailures": 0 },
+  "attemptsPerParticipant": 1,
+  "correctiveFeedback": false,
+  "semanticClarification": false,
+  "priorExposedCandidatesExcluded": ["sprint-6.5.3-candidate-1", "sprint-6.5.3-candidate-2", "sprint-6.5.3-candidate-3"],
+  "validationParticipantsEligibleForReleaseGating": false,
+  "networkRequests": 0
+}

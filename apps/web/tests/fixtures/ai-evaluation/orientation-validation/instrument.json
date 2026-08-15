@@ -1,0 +1,20 @@
+{
+  "instrumentVersion": "authority-comprehension-instrument-v1",
+  "participantLanguage": "plain-language-no-internal-terminology-required",
+  "sequence": ["free_restatement", "recognition_advice", "recognition_controls", "scenario_funds", "scenario_safety", "scenario_review", "scenario_resolution"],
+  "orders": {
+    "order-a": ["free_restatement", "recognition_advice", "recognition_controls", "scenario_funds", "scenario_safety", "scenario_review", "scenario_resolution"],
+    "order-b": ["free_restatement", "recognition_controls", "recognition_advice", "scenario_review", "scenario_resolution", "scenario_safety", "scenario_funds"]
+  },
+  "rules": { "freeRestatementAlwaysFirst": true, "oneAttempt": true, "correctiveFeedback": false, "repeatForSemanticClarification": false, "sameInstrumentAllGroups": true },
+  "coverage": {
+    "advisory_contribution": ["free_restatement", "recognition_advice"],
+    "no_autonomous_authority": ["free_restatement", "scenario_resolution"],
+    "separate_control_path": ["free_restatement", "recognition_controls"],
+    "funds_settlement": ["scenario_funds", "scenario_resolution"],
+    "financial_safety": ["scenario_safety", "recognition_controls"],
+    "reviewer_authority": ["scenario_review", "recognition_controls"],
+    "resolution_authority": ["scenario_resolution", "scenario_review"],
+    "binding_consequences": ["scenario_resolution", "scenario_funds"]
+  }
+}

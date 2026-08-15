@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orientation-validation-report-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["validationStatus", "recruitmentStatus", "hmmStatus", "networkRequests", "versions", "thresholds", "cohort", "agreement", "adjudication", "integrity", "candidateDeterminations", "reasons"],
+  "properties": { "validationStatus": { "enum": ["pass", "fail", "not_qualified"] }, "recruitmentStatus": { "const": "pending_second_founder_approval" }, "hmmStatus": { "const": "not_qualified" }, "networkRequests": { "const": 0 }, "versions": { "type": "object" }, "thresholds": { "type": "object" }, "cohort": { "type": "object" }, "agreement": { "type": "object" }, "adjudication": { "type": "object" }, "integrity": { "type": "object" }, "candidateDeterminations": { "type": "array" }, "reasons": { "type": "array", "items": { "type": "string" } } }
+}

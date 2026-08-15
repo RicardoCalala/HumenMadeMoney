@@ -1,12 +1,12 @@
 # Sprint 6.5.4 Design — Authority-Boundary Comprehension Validation
 
-Status: **DESIGN PROPOSAL — FOUNDER APPROVAL REQUIRED — NOT IMPLEMENTED**
+Status: **11/11 FOUNDER DESIGN DECISIONS APPROVED — OFFLINE IMPLEMENTATION AUTHORIZED — SECOND FOUNDER CHECKPOINT REQUIRED BEFORE RECRUITMENT**
 
 ## 1. Purpose and present state
 
-Sprint 6.5.4 proposes a newly versioned way to validate whether a person conceptually understands Human Made Money's advisory-AI and consequential-authority boundary. It addresses construct validity, scoring reproducibility, and selection bias before any further candidate contact.
+Sprint 6.5.4 defines a newly versioned way to validate whether a person conceptually understands Human Made Money's advisory-AI and consequential-authority boundary. It addresses construct validity, scoring reproducibility, and selection bias before any further candidate contact.
 
-This document is design only. It does not approve implementation, recruitment, screening, orientation, scoring, aliases, presentation orders, result capture, provider calls, production use, or any change to the frozen Sprint 6.5.3 study.
+The founder approved all 11 design decisions and authorized offline, synthetic-only implementation. This approval does not authorize recruitment, screening, real aliases or results, human administration, provider calls, credentials, production use, financial activity, or any change to the frozen Sprint 6.5.3 study. Recruitment requires a second founder approval after exact implementation evidence is reviewed.
 
 The bounded Sprint 6.5.3 process history is that three candidates remained unverified after a repeated enumeration-sensitive eligibility outcome. Those attempts are process evidence only. They are not formal study observations, do not establish an error rate, do not qualify or disqualify the people for a future newly approved protocol, and must not be rescored or retried under v1. Recruitment under Sprint 6.5.3 is paused.
 
@@ -162,15 +162,17 @@ The operator may administer and capture but may not score or adjudicate. Scorers
 
 Predeclare one finite frame of at most **16 people who may be contacted** to enroll **12 orientation-validation participants**:
 
-- target stratum A: 6 general digitally literate adults;
-- target stratum B: 6 adults with stronger technical, business, research, policy, or operational experience;
+- group A: 3 general digital users;
+- group B: 3 business/operations users;
+- group C: 3 technical/research users;
+- group D: 3 finance/legal/compliance-adjacent users;
 - no person involved in HMM development, instrument/rubric authorship, scoring implementation, operation, scoring, or adjudication;
 - no answer-key, calibration-fixture, another participant-response, or prohibited-material exposure;
 - no outcome-contingent compensation, material pressure, or incentive to make HMM qualify.
 
 The frame and neutral selection method must be frozen before the first contact. Contact order should be randomized or otherwise mechanically predeclared within stratum. Source, nonresponse, ineligibility, withdrawal, and completion counts are reported by stratum without identity.
 
-Both six-person enrollment targets are required for a passing validation. Exhausting the frame without enrolling six in each stratum is a transparent feasibility failure, not permission to change the frame or denominator.
+All four three-person enrollment targets are required for a passing validation. Exhausting the frame without enrolling three in each group is a transparent feasibility failure, not permission to change the frame or denominator. The groups are analysis strata, not different instrument versions.
 
 ### 7.2 Attempts, denominator, exclusions, and replacements
 
@@ -215,7 +217,7 @@ Implementation validation should target WCAG 2.2 AA for any rendered materials a
 
 ### 10.1 Instrument/orientation-validation gates
 
-The 12-person cohort is a bounded product-development pilot, not a population estimate or clinical validation. It is large enough to exercise two predeclared profiles, expose administration/scoring failures, and prevent “recruit until success,” while keeping disclosure and participant burden proportionate. Exact counts and two-sided 95% intervals must be reported; percentages alone are prohibited.
+The 12-person cohort is a bounded product-development pilot, not a population estimate or clinical validation. It is large enough to exercise four predeclared groups, expose administration/scoring failures, and prevent “recruit until success,” while keeping disclosure and participant burden proportionate. Exact counts and two-sided 95% intervals must be reported; percentages alone are prohibited.
 
 The version validates only if all of the following were predeclared and pass:
 
@@ -224,7 +226,7 @@ The version validates only if all of the following were predeclared and pass:
 | Critical-domain coverage | 100% of critical domains mapped and administered as frozen. |
 | Administration fidelity | 100% of completed administrations use the approved version/order with no material deviation. |
 | Analyzable completion | At least 10 of 12 enrolled participants complete valid analyzable instruments; all 12 dispositions remain reported. |
-| Candidate-level construct demonstration | At least 10 of 12 enrolled participants demonstrate the construct, and at least 4 of 6 target enrollments in each profile stratum do so. Missing/withdrawn/invalid enrolled attempts count as not demonstrated for this gate. |
+| Candidate-level construct demonstration | At least 10 of 12 enrolled participants demonstrate the construct, and at least 2 of 3 enrollments in each of groups A/B/C/D do so. Missing/withdrawn/invalid enrolled attempts count as not demonstrated for this gate. |
 | Critical unsafe claims | No participant counted as demonstrated has an unsafe or unresolved ambiguous critical tag. All unsafe counts are reported regardless of aggregate result. |
 | Initial inter-rater exact tag agreement | At least 90% overall and at least 90% across critical tags, with raw numerator/denominator. |
 | Chance-corrected agreement | Cohen's kappa at least 0.80 overall when mathematically informative; prevalence-adjusted agreement and label distribution also reported. Kappa never overrides critical exact-agreement review. |
@@ -311,17 +313,17 @@ Run repository-native documentation/security consistency checks and `git diff --
 
 ### Gate A — approve before implementation
 
-- [ ] Approve the construct definition and the distinction between semantic equivalence and missing critical-domain evidence.
-- [ ] Approve the combined measurement mode, instrument sequence, neutral-administration boundary, and no-feedback/no-retry rule.
-- [ ] Approve the semantic tags, four labels, candidate-level fail-closed rule, restricted calibration content, and no averaging of critical failures.
-- [ ] Approve independent double-scoring, scorer/operator separation, adjudicator limits, and the response to unavailable independent staffing.
-- [ ] Approve the 16-person contact frame, 12-person enrollment target, two 6-person profile strata, one-attempt cap, denominator, exclusions, replacement rule, and fixed stopping rules.
-- [ ] Approve exclusion of Candidates 1–3 from validation and release gating as prior-exposure process evidence only.
-- [ ] Approve the validation gates and sample-size rationale, including 10/12 overall and 4/6 per target stratum, without reference to observed outcomes.
-- [ ] Reaffirm Decision 7 accessibility/support policy and approve the proposed accessibility validation scope.
-- [ ] Approve separate validation aliases, minimized raw/permanent data split, mapping and response deletion defaults, ledger retention decision owner, access, encrypted backup, restore, independent digest, and incident rules.
-- [ ] Approve a distinct orientation-validation schema/report and the version-family plan; confirm v1 artifacts remain immutable.
-- [ ] Approve implementation work as offline, credential-free, zero-network, synthetic-only, and non-qualifying.
+- [x] Approve the construct definition and the distinction between semantic equivalence and missing critical-domain evidence.
+- [x] Approve the combined measurement mode, instrument sequence, neutral-administration boundary, no-feedback/no-retry rule, and terminology-independent participant language.
+- [x] Approve holistic complete-instrument semantic scoring, four labels, candidate-level fail-closed rules, restricted calibration content, and no averaging of critical failures.
+- [x] Approve independent double-scoring, scorer/operator separation, adjudicator limits, and the response to unavailable independent staffing.
+- [x] Approve the 16-person contact frame, 12-person enrollment target, four 3-person groups A/B/C/D, one-attempt cap, denominator, exclusions, replacement rule, and fixed stopping rules.
+- [x] Approve exclusion of Candidates 1–3 from validation and release gating as prior-exposure process evidence only.
+- [x] Approve the validation gates and sample-size rationale, including 10/12 overall and 2/3 in each group, without reference to observed outcomes.
+- [x] Reaffirm accessibility/support policy and approve the proposed accessibility validation scope without diagnosis disclosure or accommodation penalty.
+- [x] Approve separate validation aliases, minimized raw/permanent data split, mapping and response deletion defaults, ledger retention decision owner, access, encrypted backup, restore, independent digest, and incident rules.
+- [x] Approve a distinct orientation-validation schema/report and the version-family plan; confirm v1 and Sprint 6.4 artifacts remain immutable.
+- [x] Approve implementation work as offline, credential-free, zero-network, synthetic-only, and non-qualifying.
 
 ### Gate B — approve after implementation/validation and before any cohort recruitment
 

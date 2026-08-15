@@ -9,7 +9,8 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "eval:offline": "pnpm --filter web eval:offline"
+    "eval:offline": "pnpm --filter web eval:offline",
+    "eval:orientation:offline": "pnpm --filter web eval:orientation:offline"
   },
   "packageManager": "pnpm@11.20.0",
   "engines": {

@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"role-eligibility-attestation-v2","type":"object","additionalProperties":false,
+  "required":["recordType","schemaVersion","protocolVersion","eligibilityRecordId","role","candidateReferenceDigest","administrationDigest","instrumentManifestDigest","attestations","outcome","reasonCodes","combinedAllTrue","noAccessGranted","participantCountersChanged","releaseReviewersChanged","genuineReleaseReviewsChanged","hmmStatus"],
+  "properties":{"recordType":{"const":"role_eligibility_attestation"},"schemaVersion":{"const":"role-eligibility-attestation-v2"},"protocolVersion":{"const":"role-custody-readiness-protocol-v2"},"eligibilityRecordId":{"type":"string","format":"uuid"},"role":{"enum":["KEY","PRV"]},"candidateReferenceDigest":{"$ref":"#/$defs/digest"},"administrationDigest":{"$ref":"#/$defs/digest"},"instrumentManifestDigest":{"$ref":"#/$defs/digest"},"attestations":{"type":"object","minProperties":0,"maxProperties":12,"additionalProperties":{"const":true},"propertyNames":{"pattern":"^(?:KEY|PRV)-(?:0[1-9]|1[0-2])$"}},"outcome":{"enum":["eligible","ineligible","uncertain"]},"reasonCodes":{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^[a-z0-9_]{3,64}$"}},"combinedAllTrue":{"type":"boolean"},"noAccessGranted":{"const":true},"participantCountersChanged":{"const":0},"releaseReviewersChanged":{"const":0},"genuineReleaseReviewsChanged":{"const":0},"hmmStatus":{"const":"not_qualified"}},
+  "allOf":[
+    {"if":{"properties":{"role":{"const":"KEY"}},"required":["role"]},"then":{"properties":{"attestations":{"type":"object","propertyNames":{"pattern":"^KEY-(?:0[1-9]|1[0-2])$"}}}}},
+    {"if":{"properties":{"role":{"const":"PRV"}},"required":["role"]},"then":{"properties":{"attestations":{"type":"object","propertyNames":{"pattern":"^PRV-(?:0[1-9]|1[0-2])$"}}}}},
+    {"if":{"properties":{"outcome":{"const":"eligible"}},"required":["outcome"]},"then":{"properties":{"attestations":{"type":"object","minProperties":12,"maxProperties":12},"combinedAllTrue":{"const":true},"reasonCodes":{"type":"array","maxItems":0}}}},
+    {"if":{"properties":{"combinedAllTrue":{"const":true}},"required":["combinedAllTrue"]},"then":{"properties":{"outcome":{"const":"eligible"}}}}
+  ],
+  "$defs":{"digest":{"type":"string","pattern":"^[a-f0-9]{64}$"}}
+}

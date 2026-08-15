@@ -1,0 +1,32 @@
+{
+  "manifestVersion": "key-prv-closed-eligibility-instrument-v2",
+  "sourceProtocolVersion": "role-custody-readiness-protocol-v1",
+  "encoding": "UTF-8",
+  "statementDigestCanonicalization": "JSON.stringify(canonical statement string array)",
+  "items": [
+    {"itemId":"KEY-01","role":"KEY","statement":"Adult, voluntary acceptance, and understanding of confidentiality, least privilege, release, stop, and incident duties."},
+    {"itemId":"KEY-02","role":"KEY","statement":"No authorship, edit, approval, implementation, testing, or validation of restricted fixture content, expected labels, rationales, comparison logic, or the submission."},
+    {"itemId":"KEY-03","role":"KEY","statement":"No disclosure, copying, outside retention, exposure, or known prior compromise of a key or presentation."},
+    {"itemId":"KEY-04","role":"KEY","statement":"Not a scorer, calibration administrator, recorder, adjudicator, participant, primary submission author, or presentation operator for the attempt."},
+    {"itemId":"KEY-05","role":"KEY","statement":"No supervisory, financial, household, close-personal, reporting-line, authorship, or outcome-contingent conflict."},
+    {"itemId":"KEY-06","role":"KEY","statement":"Can keep keys deny-by-default in the approved compartment with no local copy, message, screenshot, printout, log, or ad hoc export."},
+    {"itemId":"KEY-07","role":"KEY","statement":"Will verify protocol/dataset/subset/key versions and digests and release only the exact matching subset to the deterministic loader."},
+    {"itemId":"KEY-08","role":"KEY","statement":"Will verify complete lock, lock digest, eligibility digest, separation, time order, and attempt number before release."},
+    {"itemId":"KEY-09","role":"KEY","statement":"Will keep retry material inaccessible until a valid primary failure, bounded remediation, renewed attestations, non-exposure confirmation, and retry authority all exist."},
+    {"itemId":"KEY-10","role":"KEY","statement":"Will not disclose answer-bearing material, manually score, or communicate correctness hints."},
+    {"itemId":"KEY-11","role":"KEY","statement":"Will produce only the bounded attributed release receipt required by schema."},
+    {"itemId":"KEY-12","role":"KEY","statement":"Will stop and report uncertainty, mismatch, early/excess request, substitution, abnormal access, exposure, coercion, or bypass attempt."},
+    {"itemId":"PRV-01","role":"PRV","statement":"Voluntarily accepts minimization, purpose, access, retention, deletion, hold, and incident duties."},
+    {"itemId":"PRV-02","role":"PRV","statement":"Understands every storage class and confirms no operational store is Git, an application/provider, production, or unapproved personal location."},
+    {"itemId":"PRV-03","role":"PRV","statement":"Will approve only minimum fields, least privilege, attributed logs, encryption, bounded validity, and separate backup controls."},
+    {"itemId":"PRV-04","role":"PRV","statement":"Is not a scorer/adjudicator and does not recruit, coach, interpret, score, change results, or operate comparison."},
+    {"itemId":"PRV-05","role":"PRV","statement":"Has no conflict capable of distorting access, hold, deletion, or incident decisions."},
+    {"itemId":"PRV-06","role":"PRV","statement":"Will maintain the bounded inventory, purpose, controller, access, creation, deletion, backup, and hold metadata without secrets."},
+    {"itemId":"PRV-07","role":"PRV","statement":"Will deny unrestricted narratives and unnecessary identities, credentials, paths, fixture/key text, responses, or scores."},
+    {"itemId":"PRV-08","role":"PRV","statement":"Will issue only necessary, scoped holds with reason, owner, start, access, objective trigger, and review no later than 30 days."},
+    {"itemId":"PRV-09","role":"PRV","statement":"Will verify deletion from primary, temporary, export, rejected-input, log, and aligned backup copies."},
+    {"itemId":"PRV-10","role":"PRV","statement":"Will stop on leakage, unexplained access, inventory mismatch, overcollection, missed deletion, unreviewed hold, unapproved store/export, or uncertain erasure."},
+    {"itemId":"PRV-11","role":"PRV","statement":"Will preserve only minimum incident evidence and prevent incident detail becoming an unbounded store."},
+    {"itemId":"PRV-12","role":"PRV","statement":"Will re-review access and retention after relevant role, topology, protocol, incident, closure, or necessary-hold change."}
+  ]
+}

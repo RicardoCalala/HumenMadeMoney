@@ -1,0 +1,6 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"readiness-evidence-v2","type":"object","additionalProperties":false,
+  "required":["schemaVersion","protocolVersion","administrationDigest","instrumentManifestDigest","orderIntegrity","lockedBeforePresentation","noReroll","accessibilityModeValid","prospectiveOnly","noQualificationEffect","status","evidenceDigest"],
+  "properties":{"schemaVersion":{"const":"readiness-evidence-v2"},"protocolVersion":{"const":"role-custody-readiness-protocol-v2"},"administrationDigest":{"$ref":"#/$defs/digest"},"instrumentManifestDigest":{"$ref":"#/$defs/digest"},"orderIntegrity":{"const":"PASS"},"lockedBeforePresentation":{"const":"PASS"},"noReroll":{"const":"PASS"},"accessibilityModeValid":{"const":"PASS"},"prospectiveOnly":{"const":"PASS"},"noQualificationEffect":{"const":"PASS"},"status":{"const":"PASS"},"evidenceDigest":{"$ref":"#/$defs/digest"}},
+  "$defs":{"digest":{"type":"string","pattern":"^[a-f0-9]{64}$"}}
+}

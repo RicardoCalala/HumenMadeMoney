@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "empty-topology-bootstrap-evidence-v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recordType", "schemaVersion", "protocolVersion", "bootstrapRunId", "startedAt", "completedAt", "implementationCommit", "authority", "boundaries", "compartments", "cryptography", "restore", "integrity", "retention", "isolation", "handoff", "participantCounters", "releaseGate", "evidenceDigest"],
+  "properties": {
+    "recordType": { "const": "sprint_6_5_4_empty_topology_bootstrap_evidence" },
+    "schemaVersion": { "const": "empty-topology-bootstrap-evidence-v1" },
+    "protocolVersion": { "const": "empty-topology-bootstrap-protocol-v1" },
+    "bootstrapRunId": { "type": "string", "format": "uuid" },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "implementationCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scope", "status", "expiresOn", "controllersSyntheticOnly", "roleEligibilityEffect"],
+      "properties": { "scope": { "const": "EMPTY_SYNTHETIC_ONLY" }, "status": { "const": "EXPIRED_COMPLETE" }, "expiresOn": { "const": ["required_evidence_complete", "material_incident"] }, "controllersSyntheticOnly": { "const": true }, "roleEligibilityEffect": { "const": false } }
+    },
+    "boundaries": {
+      "type": "object", "additionalProperties": false,
+      "required": ["rootLocationRef", "primaryLocationRef", "backupLocationRef", "insideAuthorizedProject", "backupSeparatelyControlled", "actualPathsOmitted", "gitIgnored"],
+      "properties": { "rootLocationRef": { "$ref": "#/$defs/loc" }, "primaryLocationRef": { "$ref": "#/$defs/loc" }, "backupLocationRef": { "$ref": "#/$defs/loc" }, "insideAuthorizedProject": { "const": true }, "backupSeparatelyControlled": { "const": true }, "actualPathsOmitted": { "const": true }, "gitIgnored": { "const": true } }
+    },
+    "compartments": {
+      "type": "array", "minItems": 8, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["class", "locationRef", "controllerLabel", "finalState", "permissions", "accessDefault", "accessGrantCount", "encryptionAlgorithm", "protectionEvidenceDigest", "accessTemplateDigest"],
+        "properties": { "class": { "$ref": "#/$defs/storageClass" }, "locationRef": { "$ref": "#/$defs/loc" }, "controllerLabel": { "type": "string", "pattern": "^SYN-BSC-[A-Z0-9]{8,32}$" }, "finalState": { "const": "EMPTY" }, "permissions": { "const": "0700" }, "accessDefault": { "const": "DENY" }, "accessGrantCount": { "const": 0 }, "encryptionAlgorithm": { "const": "AES-256-GCM" }, "protectionEvidenceDigest": { "$ref": "#/$defs/digest" }, "accessTemplateDigest": { "$ref": "#/$defs/digest" } }
+      }
+    },
+    "cryptography": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "keyBytes", "nonceBytes", "authenticationTagBytes", "distinctCompartmentKeys", "idmapKeysBackupSeparated", "recoveryScheme", "shareAAloneRejected", "shareBAloneRejected", "syntheticSecretsPersisted", "syntheticSecretsDestroyed"],
+      "properties": { "algorithm": { "const": "AES-256-GCM" }, "keyBytes": { "const": 32 }, "nonceBytes": { "const": 12 }, "authenticationTagBytes": { "const": 16 }, "distinctCompartmentKeys": { "const": true }, "idmapKeysBackupSeparated": { "const": true }, "recoveryScheme": { "const": "XOR-2-OF-2" }, "shareAAloneRejected": { "const": true }, "shareBAloneRejected": { "const": true }, "syntheticSecretsPersisted": { "const": false }, "syntheticSecretsDestroyed": { "const": true } }
+    },
+    "restore": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "coveredClasses", "sourceManifestDigest", "restoredManifestDigest", "sourceHeadDigest", "restoredHeadDigest", "expectedRecordCount", "restoredRecordCount", "isolatedTarget", "nonOverwriteVerified", "permissionProfileVerified", "exactDigestMatch", "cleanupVerified", "networkRequests"],
+      "properties": { "status": { "const": "PASS" }, "coveredClasses": { "type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": { "$ref": "#/$defs/storageClass" }, "not": { "contains": { "const": "BACKUP" } } }, "sourceManifestDigest": { "$ref": "#/$defs/digest" }, "restoredManifestDigest": { "$ref": "#/$defs/digest" }, "sourceHeadDigest": { "$ref": "#/$defs/digest" }, "restoredHeadDigest": { "$ref": "#/$defs/digest" }, "expectedRecordCount": { "type": "integer", "minimum": 0 }, "restoredRecordCount": { "type": "integer", "minimum": 0 }, "isolatedTarget": { "const": true }, "nonOverwriteVerified": { "const": true }, "permissionProfileVerified": { "const": true }, "exactDigestMatch": { "const": true }, "cleanupVerified": { "const": true }, "networkRequests": { "const": 0 } }
+    },
+    "integrity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ledgerStatus", "incidentCorrectionStatus", "chainTamperRejected", "independentHeadDigest", "syntheticRecordsRemoved"],
+      "properties": { "ledgerStatus": { "const": "PASS" }, "incidentCorrectionStatus": { "const": "PASS" }, "chainTamperRejected": { "const": true }, "independentHeadDigest": { "$ref": "#/$defs/digest" }, "syntheticRecordsRemoved": { "const": true } }
+    },
+    "retention": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policyVersion", "rules", "backupDeletionPropagationMaximumHours", "holdReviewMaximumDays", "objectiveReleaseTriggerRequired", "automaticHoldRenewal", "realDeletionExecutorVerifierDistinctRequired", "bootstrapArtifactDeletion"],
+      "properties": {
+        "policyVersion": { "const": "empty-topology-retention-v1" },
+        "rules": { "type": "array", "minItems": 12, "maxItems": 12, "items": { "type": "object", "additionalProperties": false, "required": ["class", "trigger", "daysAfterTrigger", "maximumHours", "prerequisites"], "properties": { "class": { "enum": ["IDMAP", "RAW", "LEDGER", "CAL", "PRES", "KEYS", "BACKUP", "INC", "ROLE_MAPPING", "AGGREGATE_REPORT", "ARTIFACT_MANIFEST", "HEAD_CONFIRMATION"] }, "trigger": { "type": "string", "pattern": "^[a-z0-9_]{3,96}$" }, "daysAfterTrigger": { "type": ["integer", "null"], "minimum": 1 }, "maximumHours": { "type": ["integer", "null"], "minimum": 1 }, "prerequisites": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]{3,96}$" } } } } },
+        "backupDeletionPropagationMaximumHours": { "const": 168 }, "holdReviewMaximumDays": { "const": 30 }, "objectiveReleaseTriggerRequired": { "const": true }, "automaticHoldRenewal": { "const": false }, "realDeletionExecutorVerifierDistinctRequired": { "const": true }, "bootstrapArtifactDeletion": { "const": "IMMEDIATE_AFTER_REQUIRED_EVIDENCE" }
+      }
+    },
+    "isolation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["noRealHumanData", "noRealIdentities", "noRealAliases", "noContacts", "noResponsesOrResults", "noCalibrationKeysOrFixtures", "noRoleEligibilityOrAccessEffect", "noParticipantOrScorerEvidenceEffect", "noReleaseTotalEffect", "noQualificationEffect", "noProviderOrApiUse", "noProductionDatabaseFinancialCustodySettlement"],
+      "properties": { "noRealHumanData": { "const": true }, "noRealIdentities": { "const": true }, "noRealAliases": { "const": true }, "noContacts": { "const": true }, "noResponsesOrResults": { "const": true }, "noCalibrationKeysOrFixtures": { "const": true }, "noRoleEligibilityOrAccessEffect": { "const": true }, "noParticipantOrScorerEvidenceEffect": { "const": true }, "noReleaseTotalEffect": { "const": true }, "noQualificationEffect": { "const": true }, "noProviderOrApiUse": { "const": true }, "noProductionDatabaseFinancialCustodySettlement": { "const": true } }
+    },
+    "handoff": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "status", "realPrvQualified", "realRcvQualified", "topologyAcceptedByRealCustodians", "newOperationalCredentialsRequired", "humanSeparatedRestoreRequired", "topologyMismatchBlocks", "bootstrapControllersIneligible"],
+      "properties": { "required": { "const": true }, "status": { "const": "NOT_STARTED" }, "realPrvQualified": { "const": false }, "realRcvQualified": { "const": false }, "topologyAcceptedByRealCustodians": { "const": false }, "newOperationalCredentialsRequired": { "const": true }, "humanSeparatedRestoreRequired": { "const": true }, "topologyMismatchBlocks": { "const": true }, "bootstrapControllersIneligible": { "const": true } }
+    },
+    "participantCounters": { "const": { "contacted": 0, "enrolled": 0, "A": 0, "B": 0, "C": 0, "D": 0 } },
+    "releaseGate": { "const": { "reviewers": 0, "genuineReviews": 0, "hmmStatus": "not_qualified" } },
+    "evidenceDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "loc": { "type": "string", "pattern": "^LOC-[A-Z0-9]{12,40}$" },
+    "storageClass": { "enum": ["IDMAP", "RAW", "LEDGER", "CAL", "PRES", "KEYS", "BACKUP", "INC"] }
+  }
+}

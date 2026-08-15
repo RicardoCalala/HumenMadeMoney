@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "collective-readiness-v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recordType", "schemaVersion", "protocolVersion", "implementationCommit", "governanceHead", "artifactEnvelopeDigest", "bootstrapEvidenceDigest", "bootstrapAuthorityStatus", "decision", "reasonCodes", "realKeyPrvScreeningAuthorized", "realScorerCalibrationAuthorized", "a01ContactAuthorized", "participantCounters", "releaseGate"],
+  "properties": {
+    "recordType": { "const": "sprint_6_5_4_collective_readiness" },
+    "schemaVersion": { "const": "collective-readiness-v3" },
+    "protocolVersion": { "const": "empty-topology-bootstrap-protocol-v1" },
+    "implementationCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "governanceHead": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "artifactEnvelopeDigest": { "$ref": "#/$defs/digest" },
+    "bootstrapEvidenceDigest": { "$ref": "#/$defs/digest" },
+    "bootstrapAuthorityStatus": { "const": "EXPIRED_COMPLETE" },
+    "decision": { "enum": ["READY", "BLOCKED"] },
+    "reasonCodes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9_]{3,96}$" } },
+    "realKeyPrvScreeningAuthorized": { "type": "boolean" },
+    "realScorerCalibrationAuthorized": { "type": "boolean" },
+    "a01ContactAuthorized": { "const": false },
+    "participantCounters": { "const": { "contacted": 0, "enrolled": 0, "A": 0, "B": 0, "C": 0, "D": 0 } },
+    "releaseGate": { "const": { "reviewers": 0, "genuineReviews": 0, "hmmStatus": "not_qualified" } }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+}

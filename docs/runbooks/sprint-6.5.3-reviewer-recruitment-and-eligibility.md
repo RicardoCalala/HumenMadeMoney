@@ -4,7 +4,7 @@ Status: **RECRUITMENT AND VERIFICATION PENDING — 0/2 VERIFIED — NOT_QUALIFIE
 
 This package supports neutral recruitment and screening for the frozen `human-review-protocol-v1` product-development comprehension study. The study uses 15 synthetic scenarios. It is not medical or psychological research and grants no product, settlement, funds, reviewer-assignment, or Financial Safety authority.
 
-The frozen protocol, rubric, study manifest, result schema, reviewer packet, founder decision record, and execution runbook remain the source of truth. This document does not change them.
+The frozen protocol, rubric, study manifest, result schema, reviewer packet, founder decision record, and execution runbook remain the source of truth. The approved and frozen `human-review-orientation-v1` in [`docs/human-review-orientation-v1.md`](../human-review-orientation-v1.md) standardizes the already-required orientation and restatement procedure. This document does not change the frozen study materials or rules.
 
 ## Neutral recruitment message
 
@@ -34,7 +34,7 @@ Record only a yes/no eligibility decision and the minimum evidence needed in the
 - [ ] Candidate is an adult.
 - [ ] Candidate fits the open slot: general digitally literate adult for the first slot, or an adult with somewhat stronger technical, business, or research experience for the second.
 - [ ] Candidate can read the packet in an available accessible format, with approved support if requested.
-- [ ] Candidate completes the short product and AI-policy orientation.
+- [ ] Candidate receives the marked presentation text in `human-review-orientation-v1` verbatim and in full.
 - [ ] After orientation, candidate can correctly restate that an automated assessment is advisory only and cannot settle, release, refund, or move funds; clear Financial Safety; assign a reviewer; or make a binding legal or financial decision.
 
 ### Independence, exposure, and conflicts
@@ -92,10 +92,13 @@ For recruitment and screening:
 
 1. Use the neutral message without expected answers, thresholds, or pass-oriented language.
 2. Keep each candidate interaction private and separate. Apply the checklist consistently to both profiles.
-3. Offer approved accessibility options and extra time without requesting diagnosis disclosure.
-4. Record the minimum verification evidence outside Git; keep access operator-only.
-5. Stop on uncertainty, conflict, prohibited exposure, privacy failure, pressure, or material influence. Preserve only minimal necessary evidence and keep the candidate unverified.
-6. Report only aggregate readiness in repository documentation: currently `0/2` verified.
+3. Before orientation, preserve any earlier restatement response and demonstrated/not-demonstrated outcome as the first attempt; never erase or overwrite it.
+4. Present the marked text in `human-review-orientation-v1` verbatim and in full. Offer approved accessibility options, equivalent readable formatting, reasonable breaks, and extra time without requesting diagnosis disclosure or changing the wording or substance.
+5. Do not coach, interpret the boundary, answer the restatement question, provide examples of a passing answer, or use leading follow-ups. Ask exactly: “Please restate in your own words: what role may an automated assessment play in Human Made Money, and what authority does it not have?”
+6. Preserve the candidate's first post-orientation response and outcome separately from any pre-orientation or earlier attempt. A failed, incomplete, uncertain, or not-demonstrated response keeps the candidate unverified and the study `NOT_QUALIFIED`.
+7. Record the minimum verification evidence outside Git; keep access operator-only.
+8. Stop on uncertainty, conflict, prohibited exposure, privacy failure, pressure, or material influence. Preserve only minimal necessary evidence and keep the candidate unverified.
+9. Report only aggregate readiness in repository documentation: currently `0/2` verified.
 
 ## Pre-assignment boundary
 
@@ -120,3 +123,5 @@ Even after both reviewers pass, do not start until every other founder-recorded 
 - Human-review gate: **NOT_QUALIFIED**.
 
 Recruitment documentation does not authorize provider calls, API-key access, production enablement, immutable-assessment changes, Sprint 6.4 artifact changes, human submissions, presentation-order assignment, settlement, or funds movement.
+
+This clarification does not alter `human-review-protocol-v1`, `human-review-rubric-v1`, `hmm-comprehension-study-v1`, `human-review-result-v1`, dataset `2.0.0`, study cases, `orderA` or `orderB`, sample size, thresholds, partition coverage, reviewer eligibility criteria, authority semantics, or the current `NOT_QUALIFIED` state.

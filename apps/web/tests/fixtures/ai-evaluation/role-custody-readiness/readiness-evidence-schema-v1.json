@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "readiness-evidence-v1", "type": "object", "additionalProperties": false,
+  "required": ["status", "evidenceDigest", "verifiedAt", "validUntil", "verifierAlias"], "properties": { "status": { "enum": ["PASS", "BLOCKED", "UNCERTAIN"] }, "evidenceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "verifiedAt": { "type": "string", "format": "date-time" }, "validUntil": { "type": "string", "format": "date-time" }, "verifierAlias": { "type": "string", "pattern": "^(?:TST-)?(?:SCR|ADJ|OPR|ADM|KEY|REC|PRV|RCV|HDR)-[A-Z0-9]{8,32}$" } },
+  "controlNames": ["roleCoverage", "separation", "accessControl", "identityMapping", "encryptedRawStorage", "minimizedLedger", "calibrationEvidence", "restrictedPresentationCustody", "keyCustody", "backupCustody", "syntheticRestore", "appendOnlyChain", "correctionSemantics", "independentHead", "retentionDeletion", "holdProcedure", "incidentRoute", "offlineValidation", "zeroNetwork", "noQualificationEffect"]
+}

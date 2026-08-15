@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "role-assignment-v1", "type": "object", "additionalProperties": false,
+  "required": ["recordType", "schemaVersion", "protocolVersion", "assignmentId", "role", "alias", "mappingRecordDigest", "eligibilityDigest", "accessProfileDigest", "founderApprovalDigest", "assignedAt", "validFrom", "validUntil", "status", "accessEnabled", "revocationReasonCode", "revokedAt", "testOnly", "assignmentDigest"],
+  "properties": {
+    "recordType": { "const": "role_assignment" }, "schemaVersion": { "const": "role-assignment-v1" }, "protocolVersion": { "const": "role-custody-readiness-protocol-v1" }, "assignmentId": { "type": "string", "format": "uuid" },
+    "role": { "enum": ["SCR", "ADJ", "OPR", "ADM", "KEY", "REC", "PRV", "RCV", "HDR"] }, "alias": { "type": "string", "pattern": "^(?:TST-)?(?:SCR|ADJ|OPR|ADM|KEY|REC|PRV|RCV|HDR)-[A-Z0-9]{8,32}$" },
+    "mappingRecordDigest": { "$ref": "#/$defs/digest" }, "eligibilityDigest": { "$ref": "#/$defs/digest" }, "accessProfileDigest": { "$ref": "#/$defs/digest" }, "founderApprovalDigest": { "$ref": "#/$defs/digest" }, "assignedAt": { "type": "string", "format": "date-time" }, "validFrom": { "type": "string", "format": "date-time" }, "validUntil": { "type": "string", "format": "date-time" }, "status": { "enum": ["approved_disabled", "active", "revoked"] }, "accessEnabled": { "type": "boolean" }, "revocationReasonCode": { "type": ["string", "null"] }, "revokedAt": { "type": ["string", "null"], "format": "date-time" }, "testOnly": { "type": "boolean" }, "assignmentDigest": { "$ref": "#/$defs/digest" }
+  }, "$defs": { "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+  "prohibitedFields": ["name", "contact", "identity", "path", "provider", "credential", "secret", "passphrase", "fixtureText", "expectedLabel", "rawResponse", "score"]
+}

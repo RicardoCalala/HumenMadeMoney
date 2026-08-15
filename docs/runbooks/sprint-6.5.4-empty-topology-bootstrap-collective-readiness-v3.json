@@ -1,0 +1,34 @@
+{
+  "recordType": "sprint_6_5_4_collective_readiness",
+  "schemaVersion": "collective-readiness-v3",
+  "protocolVersion": "empty-topology-bootstrap-protocol-v1",
+  "implementationCommit": "3f1c9cf0715117162fc171e00452ca60d7c5a177",
+  "governanceHead": "3f1c9cf0715117162fc171e00452ca60d7c5a177",
+  "artifactEnvelopeDigest": "8166a455aeb4d4092a2b5d91b264f8f9e97f306b83f6424d57a5fd95a5ace89b",
+  "bootstrapEvidenceDigest": "1bcd2aeca84b55733cb202732aa15854a2fa0e00b4991f998879cebbf45ef57f",
+  "bootstrapAuthorityStatus": "EXPIRED_COMPLETE",
+  "decision": "BLOCKED",
+  "reasonCodes": [
+    "empty_bootstrap_founder_checkpoint_pending",
+    "other_collective_readiness_controls_blocked",
+    "randomized_order_founder_checkpoint_pending",
+    "real_human_separated_handoff_restore_absent",
+    "real_prv_rcv_and_required_roles_not_qualified"
+  ],
+  "realKeyPrvScreeningAuthorized": false,
+  "realScorerCalibrationAuthorized": false,
+  "a01ContactAuthorized": false,
+  "participantCounters": {
+    "contacted": 0,
+    "enrolled": 0,
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "releaseGate": {
+    "reviewers": 0,
+    "genuineReviews": 0,
+    "hmmStatus": "not_qualified"
+  }
+}

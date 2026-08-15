@@ -1,0 +1,318 @@
+{
+  "recordType": "sprint_6_5_4_empty_topology_bootstrap_evidence",
+  "schemaVersion": "empty-topology-bootstrap-evidence-v1",
+  "protocolVersion": "empty-topology-bootstrap-protocol-v1",
+  "bootstrapRunId": "33bce379-8142-4eca-bfcf-6e9fbcc2e2e0",
+  "startedAt": "2026-08-15T08:04:37.057Z",
+  "completedAt": "2026-08-15T08:04:37.090Z",
+  "implementationCommit": "3f1c9cf0715117162fc171e00452ca60d7c5a177",
+  "authority": {
+    "scope": "EMPTY_SYNTHETIC_ONLY",
+    "status": "EXPIRED_COMPLETE",
+    "expiresOn": [
+      "required_evidence_complete",
+      "material_incident"
+    ],
+    "controllersSyntheticOnly": true,
+    "roleEligibilityEffect": false
+  },
+  "boundaries": {
+    "rootLocationRef": "LOC-50B1CD18FC1AAC5D9F20FB50",
+    "primaryLocationRef": "LOC-726F0E04BE99B31AA78BAA98",
+    "backupLocationRef": "LOC-E227A063459A7C871D43E761",
+    "insideAuthorizedProject": true,
+    "backupSeparatelyControlled": true,
+    "actualPathsOmitted": true,
+    "gitIgnored": true
+  },
+  "compartments": [
+    {
+      "class": "IDMAP",
+      "locationRef": "LOC-2F9BCD6D684B4762C46C170E",
+      "controllerLabel": "SYN-BSC-IDMAPCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "f09d125c01d136c6aa0ecb4675de22b84aa374df32dec9dd627d12ce1ffac6a8",
+      "accessTemplateDigest": "6f4deaa322b81dce2dcd662d2e2669afc90fdfd73ba4f0259d1426eb1e5caf7c"
+    },
+    {
+      "class": "RAW",
+      "locationRef": "LOC-F37A0E50100A16C745D22D44",
+      "controllerLabel": "SYN-BSC-RAWCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "d5612bb9467bd75a717c62fda2abe45bcbd686967f9367289aae60e2db0c0f55",
+      "accessTemplateDigest": "966d3ede2ba9b835a15daf7208f22937155fb45755e9ee2904050c6b218cdcf9"
+    },
+    {
+      "class": "LEDGER",
+      "locationRef": "LOC-266AA05FD9FE43F94DB804A1",
+      "controllerLabel": "SYN-BSC-LEDGERCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "7f98b461191c9c600d7f0b9b0ab01d1afab3bb236a27a6a6eaf102f4cd4933ae",
+      "accessTemplateDigest": "703261d693be9a2919cb18eabb0ce19684386e313c847b413981893e1cb66ab7"
+    },
+    {
+      "class": "CAL",
+      "locationRef": "LOC-C4CD7B2EC4285A0C532B73FD",
+      "controllerLabel": "SYN-BSC-CALCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "65f8f538693993a4f7ba448fba920503156d5852b3b35131b1e0ccfd4b8bb48e",
+      "accessTemplateDigest": "7c30679ccd33755eb05096d77546651c761a51b2fcd3e5d25f66468c1c8a0a4d"
+    },
+    {
+      "class": "PRES",
+      "locationRef": "LOC-CB3BD73284FC78110A57CB26",
+      "controllerLabel": "SYN-BSC-PRESCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "c96edaf87cf805885a3c87262cadfc5072d9f628b3e61da091c349fb8cd4478a",
+      "accessTemplateDigest": "25cc8eedb5c91f699390f7fa3c2bd6d33c656930cc9f64fc416d903b09d19788"
+    },
+    {
+      "class": "KEYS",
+      "locationRef": "LOC-35D85E26E8C8193D84545544",
+      "controllerLabel": "SYN-BSC-KEYSCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "53e237b41f0318eb7bee6cc8d26fd93e5a5afa3e531fc733ce77a82b0d26db07",
+      "accessTemplateDigest": "bca3673225fcbad216e865a710e0fc2fa65e0f16dc54834030c7db4f2e41f92b"
+    },
+    {
+      "class": "BACKUP",
+      "locationRef": "LOC-8BA82692E4ABCACCFBD1BAF3",
+      "controllerLabel": "SYN-BSC-BACKUPCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "f97402b5611087f07f1ad5d00fee48720a0e615d13936c777ebf7e41f0e1431f",
+      "accessTemplateDigest": "bbcb72a44789a1b12e92f72c4a39cee2663c0dd467f37a87ee834d027e3f9e2e"
+    },
+    {
+      "class": "INC",
+      "locationRef": "LOC-C8ADF3B404B19240276F6057",
+      "controllerLabel": "SYN-BSC-INCCONTROL",
+      "finalState": "EMPTY",
+      "permissions": "0700",
+      "accessDefault": "DENY",
+      "accessGrantCount": 0,
+      "encryptionAlgorithm": "AES-256-GCM",
+      "protectionEvidenceDigest": "2ddfc2d5230a23c384ee88832b7bb7a9a3dc67e7e83dc1b9f7cd967eb03fae93",
+      "accessTemplateDigest": "06e29800b1b56ab1cc7f4e7284ceecf8b9ff8d1bb0e80f7fa2866a6fb26a01fa"
+    }
+  ],
+  "cryptography": {
+    "algorithm": "AES-256-GCM",
+    "keyBytes": 32,
+    "nonceBytes": 12,
+    "authenticationTagBytes": 16,
+    "distinctCompartmentKeys": true,
+    "idmapKeysBackupSeparated": true,
+    "recoveryScheme": "XOR-2-OF-2",
+    "shareAAloneRejected": true,
+    "shareBAloneRejected": true,
+    "syntheticSecretsPersisted": false,
+    "syntheticSecretsDestroyed": true
+  },
+  "restore": {
+    "status": "PASS",
+    "coveredClasses": [
+      "IDMAP",
+      "RAW",
+      "LEDGER",
+      "CAL",
+      "PRES",
+      "KEYS",
+      "INC"
+    ],
+    "sourceManifestDigest": "c9263aef0f9bb5d47c8faa67994b9aa3aa356095848314eb2cd88ff11717eae6",
+    "restoredManifestDigest": "c9263aef0f9bb5d47c8faa67994b9aa3aa356095848314eb2cd88ff11717eae6",
+    "sourceHeadDigest": "6a8b9694ba8577b3b8d66f16c2bc968469371c948a86d1331dd72ff203eada83",
+    "restoredHeadDigest": "6a8b9694ba8577b3b8d66f16c2bc968469371c948a86d1331dd72ff203eada83",
+    "expectedRecordCount": 9,
+    "restoredRecordCount": 9,
+    "isolatedTarget": true,
+    "nonOverwriteVerified": true,
+    "permissionProfileVerified": true,
+    "exactDigestMatch": true,
+    "cleanupVerified": true,
+    "networkRequests": 0
+  },
+  "integrity": {
+    "ledgerStatus": "PASS",
+    "incidentCorrectionStatus": "PASS",
+    "chainTamperRejected": true,
+    "independentHeadDigest": "6a8b9694ba8577b3b8d66f16c2bc968469371c948a86d1331dd72ff203eada83",
+    "syntheticRecordsRemoved": true
+  },
+  "retention": {
+    "policyVersion": "empty-topology-retention-v1",
+    "rules": [
+      {
+        "class": "IDMAP",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": [
+          "necessary_hold_released"
+        ]
+      },
+      {
+        "class": "ROLE_MAPPING",
+        "trigger": "last_operational_need_and_related_incident_hold_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": []
+      },
+      {
+        "class": "RAW",
+        "trigger": "validation_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": [
+          "required_completion_prerequisites"
+        ]
+      },
+      {
+        "class": "CAL",
+        "trigger": "validation_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": [
+          "required_completion_prerequisites"
+        ]
+      },
+      {
+        "class": "PRES",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": [
+          "frozen_study_reproducibility_resolved"
+        ]
+      },
+      {
+        "class": "KEYS",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 90,
+        "maximumHours": null,
+        "prerequisites": [
+          "reproducibility_integrity_resolved"
+        ]
+      },
+      {
+        "class": "INC",
+        "trigger": "incident_closure",
+        "daysAfterTrigger": 180,
+        "maximumHours": null,
+        "prerequisites": [
+          "documented_hold_released"
+        ]
+      },
+      {
+        "class": "LEDGER",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 365,
+        "maximumHours": null,
+        "prerequisites": []
+      },
+      {
+        "class": "AGGREGATE_REPORT",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 365,
+        "maximumHours": null,
+        "prerequisites": []
+      },
+      {
+        "class": "ARTIFACT_MANIFEST",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 365,
+        "maximumHours": null,
+        "prerequisites": []
+      },
+      {
+        "class": "HEAD_CONFIRMATION",
+        "trigger": "sprint_6_5_qualification_closure",
+        "daysAfterTrigger": 365,
+        "maximumHours": null,
+        "prerequisites": []
+      },
+      {
+        "class": "BACKUP",
+        "trigger": "applicable_source_deletion",
+        "daysAfterTrigger": null,
+        "maximumHours": 168,
+        "prerequisites": [
+          "backup_never_outlives_source"
+        ]
+      }
+    ],
+    "backupDeletionPropagationMaximumHours": 168,
+    "holdReviewMaximumDays": 30,
+    "objectiveReleaseTriggerRequired": true,
+    "automaticHoldRenewal": false,
+    "realDeletionExecutorVerifierDistinctRequired": true,
+    "bootstrapArtifactDeletion": "IMMEDIATE_AFTER_REQUIRED_EVIDENCE"
+  },
+  "isolation": {
+    "noRealHumanData": true,
+    "noRealIdentities": true,
+    "noRealAliases": true,
+    "noContacts": true,
+    "noResponsesOrResults": true,
+    "noCalibrationKeysOrFixtures": true,
+    "noRoleEligibilityOrAccessEffect": true,
+    "noParticipantOrScorerEvidenceEffect": true,
+    "noReleaseTotalEffect": true,
+    "noQualificationEffect": true,
+    "noProviderOrApiUse": true,
+    "noProductionDatabaseFinancialCustodySettlement": true
+  },
+  "handoff": {
+    "required": true,
+    "status": "NOT_STARTED",
+    "realPrvQualified": false,
+    "realRcvQualified": false,
+    "topologyAcceptedByRealCustodians": false,
+    "newOperationalCredentialsRequired": true,
+    "humanSeparatedRestoreRequired": true,
+    "topologyMismatchBlocks": true,
+    "bootstrapControllersIneligible": true
+  },
+  "participantCounters": {
+    "contacted": 0,
+    "enrolled": 0,
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 0
+  },
+  "releaseGate": {
+    "reviewers": 0,
+    "genuineReviews": 0,
+    "hmmStatus": "not_qualified"
+  },
+  "evidenceDigest": "1bcd2aeca84b55733cb202732aa15854a2fa0e00b4991f998879cebbf45ef57f"
+}
